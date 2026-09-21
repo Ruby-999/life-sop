@@ -1,0 +1,1489 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<title>今日节律 · 生活SOP</title>
+<!-- === PWA === -->
+<link rel="manifest" href="./manifest.json">
+<meta name="theme-color" content="#FFC857">
+<meta name="description" content="把日常 SOP 锚定到日历上的个人生活节律工具。">
+<!-- iOS 全屏 & 图标 -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="今日节律">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="apple-touch-icon" href="./apple-touch-icon.png">
+<link rel="icon" type="image/svg+xml" href="./icon.svg">
+<link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Inter+Tight:wght@500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#FFFAF0;
+  --card:#FFFFFF;
+  --ink:#2D2A26;
+  --ink2:#5C5147;
+  --ink3:#9C8F7E;
+  --line:#F5E5BD;
+  --line2:#E5D198;
+  /* === 主题色三件套 === */
+  --accent:#FFC857;
+  --accent-soft:#FFF3D9;
+  --accent-deep:#C68A1F;
+  --accent-glow:rgba(255,200,87,.45);
+  /* === 所有黄色 === 全部跟随 accent 主题，JS 改 --accent 整套换色 === */
+  --yellow:var(--accent);
+  --yellow-soft:var(--accent-soft);
+  --yellow-deep:var(--accent-deep);
+  --coral:#FF8C7A;
+  --coral-soft:#FFE9E4;
+  --blue:#6BB6E0;
+  --blue-soft:#E4F2FA;
+  --green:#7BB661;
+  --green-soft:#E5F2DC;
+  --green-deep:#5A9A45;
+  --purple:#B79CED;
+  --purple-soft:#EAE3FA;
+  --shadow:0 2px 12px rgba(220,180,80,.10);
+  --shadow-lg:0 6px 20px rgba(220,180,80,.16);
+  --r-card:20px;
+  --r-btn:12px;
+  --r-pill:36px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:linear-gradient(135deg,#F4E8C8 0%,#E9D9A8 100%);font-family:"Noto Sans SC","Inter",system-ui,-apple-system,sans-serif;color:var(--ink);-webkit-font-smoothing:antialiased;min-height:100vh}
+body{display:flex;justify-content:center;align-items:flex-start;padding:24px 16px;min-height:100vh}
+.app-frame{width:390px;min-height:844px;height:calc(100vh - 48px);max-height:844px;background:var(--bg);border-radius:48px;box-shadow:0 30px 80px rgba(180,140,60,.25),0 0 0 8px #1a1a1a,0 0 0 9px #333;overflow:hidden;position:relative;display:flex;flex-direction:column}
+.status-bar{height:54px;display:flex;align-items:center;justify-content:space-between;padding:0 32px 0 36px;font-family:"Inter",sans-serif;font-weight:600;font-size:15px;color:var(--ink);flex-shrink:0}
+.status-bar .right{display:flex;align-items:center;gap:6px}
+.battery{width:26px;height:12px;border:1.5px solid var(--ink);border-radius:3px;position:relative;flex-shrink:0}
+.battery::after{content:"";position:absolute;right:-3.5px;top:3px;width:3px;height:4px;border-radius:0 1px 1px 0;background:var(--ink)}
+.battery i{display:block;height:100%;width:82%;background:var(--ink);border-radius:1px}
+.signal{display:flex;align-items:flex-end;gap:2px;height:11px}
+.signal i{width:3px;background:var(--ink);border-radius:1px}
+.signal i:nth-child(1){height:4px}
+.signal i:nth-child(2){height:6px}
+.signal i:nth-child(3){height:8px}
+.signal i:nth-child(4){height:10px}
+.screens{position:relative;flex:1;overflow:hidden}
+.screen{position:absolute;inset:0;overflow-y:auto;padding:4px 20px 110px;display:none}
+.screen.active{display:block;animation:fade .25s ease}
+.screen::-webkit-scrollbar{display:none}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.tabbar{position:absolute;left:0;right:0;bottom:0;height:92px;display:flex;align-items:center;justify-content:center;padding:0 16px 24px;pointer-events:none}
+.tabbar .bar{width:100%;height:62px;background:var(--card);border:1px solid var(--line);border-radius:var(--r-pill);display:flex;align-items:center;padding:4px;box-shadow:var(--shadow-lg);pointer-events:auto}
+.tab{flex:1;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;border-radius:26px;color:var(--ink3);font-family:"Inter",sans-serif;font-weight:600;font-size:10px;letter-spacing:.5px;text-transform:uppercase;cursor:pointer;transition:.2s}
+.tab.active{background:var(--yellow);color:var(--ink);box-shadow:0 3px 8px var(--accent-glow)}
+.tab svg{width:18px;height:18px;display:block}
+.greeting{display:flex;align-items:center;justify-content:space-between;margin:6px 0 14px}
+.greeting .txt{display:flex;flex-direction:column;gap:2px}
+.greeting h1{font-size:22px;font-weight:600;margin:0;letter-spacing:-.01em}
+.greeting .date{font-size:13px;color:var(--ink2)}
+.avatar{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--yellow) 0%,var(--yellow-deep) 100%);display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;font-family:"Inter",sans-serif;font-size:16px;box-shadow:0 3px 10px var(--accent-glow);position:relative;overflow:hidden}
+.week{background:var(--card);border-radius:var(--r-card);padding:12px 10px;box-shadow:var(--shadow);display:flex;justify-content:space-between;margin-bottom:16px}
+.week .day{flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer;padding:4px 0;border-radius:14px;transition:.15s}
+.week .day:active{background:var(--yellow-soft)}
+.week .dw{font-size:11px;color:var(--ink3);font-weight:500;letter-spacing:.04em}
+.week .num{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;font-family:"Inter Tight","Inter",sans-serif;color:var(--ink)}
+.week .day.today .num{background:var(--yellow);color:#fff;box-shadow:0 3px 8px var(--accent-glow);font-weight:700}
+.week .day .dot{width:4px;height:4px;border-radius:50%;background:var(--coral)}
+.progress{background:var(--card);border-radius:var(--r-card);padding:18px;box-shadow:var(--shadow);margin-bottom:16px;display:flex;align-items:center;gap:16px}
+.ring{position:relative;width:84px;height:84px;flex-shrink:0}
+.ring svg{transform:rotate(-90deg)}
+.ring .pct{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:"Inter Tight","Inter",sans-serif;font-weight:700;font-size:22px;color:var(--ink)}
+.ring.pulse svg{animation:pulseRing .5s ease}
+@keyframes pulseRing{0%{transform:rotate(-90deg) scale(1)}40%{transform:rotate(-90deg) scale(1.12)}100%{transform:rotate(-90deg) scale(1)}}
+.progress .info{flex:1;display:flex;flex-direction:column;gap:6px}
+.progress .info .h{font-size:15px;font-weight:600}
+.progress .info .sub{font-size:12px;color:var(--ink2)}
+.progress .info .bar{height:6px;background:var(--yellow-soft);border-radius:99px;overflow:hidden;margin-top:2px}
+.progress .info .bar i{display:block;height:100%;background:linear-gradient(90deg,var(--yellow-soft),var(--yellow));border-radius:99px;transition:.4s}
+.streak{display:inline-flex;align-items:center;gap:4px;background:var(--coral-soft);color:#D8554A;font-weight:600;font-size:11px;padding:4px 10px;border-radius:99px;width:fit-content;margin-top:2px}
+.sec-title{display:flex;align-items:center;justify-content:space-between;margin:8px 4px 10px}
+.sec-title h3{margin:0;font-size:14px;font-weight:600;color:var(--ink)}
+.sec-title .more{font-size:12px;color:var(--ink3)}
+.list{background:var(--card);border-radius:var(--r-card);box-shadow:var(--shadow);padding:6px;margin-bottom:18px}
+.item{display:flex;align-items:center;gap:12px;padding:10px;border-radius:14px;cursor:pointer;transition:.15s;position:relative}
+.item:hover{background:var(--yellow-soft)}
+.item .chk{width:22px;height:22px;border-radius:11px;border:1.5px solid var(--line2);display:flex;align-items:center;justify-content:center;flex-shrink:0;background:#fff;transition:.25s;position:relative}
+.item.done .chk{background:var(--yellow);border-color:var(--yellow)}
+.item.done .chk svg{display:block}
+.item .chk svg{display:none;width:13px;height:13px}
+.item .label{flex:1;font-size:15px;color:var(--ink)}
+.item.done .label{color:var(--ink3);text-decoration:line-through;text-decoration-thickness:1px;text-decoration-color:var(--ink3)}
+.item .meta{font-size:12px;color:var(--ink3);display:flex;align-items:center;gap:6px;white-space:nowrap}
+.item.water{flex-direction:column;align-items:stretch;gap:0}
+.item.water .top{display:flex;align-items:center;gap:12px}
+.water-cups{display:flex;gap:6px;flex:1;align-items:center}
+.cup-col{display:flex;flex-direction:column;align-items:center;position:relative;flex:1;padding-bottom:14px}
+.cup{width:100%;max-width:36px;height:42px;border-radius:6px 6px 14px 14px;border:2px solid var(--line2);background:#fff;position:relative;overflow:hidden;transition:.3s}
+.cup .fill{position:absolute;left:0;right:0;bottom:0;background:var(--yellow);height:0;transition:height .4s cubic-bezier(.4,0,.2,1)}
+.cup.full{border-color:var(--yellow)}
+.cup.over{border-color:var(--blue);background:#F5FBFF}
+.cup.over .fill{background:var(--blue)}
+.cup-col .num{position:absolute;bottom:-2px;left:0;right:0;text-align:center;font-size:9px;color:var(--ink3);font-weight:500;font-family:"Inter Tight",sans-serif}
+.water-actions{display:flex;flex-direction:column;gap:6px;align-items:center}
+.water-btn{background:var(--yellow);color:var(--ink);font-weight:600;font-size:11px;padding:6px 12px;border-radius:99px;border:none;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:2px;box-shadow:0 2px 6px var(--accent-glow);min-width:62px;justify-content:center}
+.water-btn:active{transform:scale(.95)}
+.water-btn.minus{background:var(--yellow-soft);color:var(--ink2);box-shadow:none}
+.water-summary{font-size:12px;color:var(--ink2);font-weight:600;font-family:"Inter Tight",sans-serif;text-align:right;flex-shrink:0;min-width:60px}
+.water-summary strong{color:var(--ink);font-size:14px}
+.water-summary.over strong{color:var(--blue)}
+.item.water .water-row{display:flex;gap:6px;margin:10px 0 0 34px}
+/* drink card */
+.drink-card{padding:12px 14px;background:var(--card);border-radius:var(--r-card);box-shadow:var(--shadow);margin-bottom:18px}
+.drink-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.drink-head .ttl{display:flex;align-items:center;gap:6px;font-weight:600;font-size:14px}
+.drink-head .ttl .badge{font-size:10px;background:var(--purple-soft);color:#7C5FC4;padding:2px 7px;border-radius:99px;font-weight:600}
+.drink-head .badge-warn{background:var(--coral-soft);color:#D8554A}
+.drink-head .cnt{font-size:11px;color:var(--ink2);background:#F7F1E2;padding:3px 9px;border-radius:99px;font-weight:600}
+.drink-head .cnt.over{background:var(--coral-soft);color:#D8554A}
+.drinks-list{display:flex;gap:8px;overflow-x:auto;padding:4px 0 8px;margin:0 -2px;scrollbar-width:none}
+.drinks-list::-webkit-scrollbar{display:none}
+.drink-thumb{position:relative;flex-shrink:0;width:64px;height:64px;border-radius:14px;background:var(--yellow-soft);overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:24px;cursor:pointer;border:2px solid transparent;transition:.15s}
+.drink-thumb:hover{border-color:var(--yellow)}
+.drink-thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.drink-thumb .x{position:absolute;top:2px;right:2px;width:18px;height:18px;border-radius:50%;background:rgba(0,0,0,.5);color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px;cursor:pointer;font-weight:700;line-height:1}
+.drink-thumb .kcal{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(0,0,0,.65));color:#fff;font-size:10px;font-weight:600;padding:6px 4px 3px;text-align:center;font-family:"Inter Tight",sans-serif}
+.drink-add{position:relative;flex-shrink:0;width:64px;height:64px;border-radius:14px;background:var(--yellow-soft);border:2px dashed var(--yellow);display:flex;align-items:center;justify-content:center;font-size:22px;color:var(--yellow-deep);cursor:pointer;transition:.15s}
+.drink-add:hover{background:var(--yellow);color:#fff}
+.drink-add .hint{position:absolute;bottom:6px;left:0;right:0;text-align:center;font-size:9px;color:var(--yellow-deep);font-weight:600}
+.drink-add:hover .hint{color:#fff}
+.preset-row{display:flex;gap:6px;overflow-x:auto;padding:2px 0 8px;scrollbar-width:none;margin:0 -2px}
+.preset-row::-webkit-scrollbar{display:none}
+.preset{flex-shrink:0;display:inline-flex;align-items:center;gap:4px;background:var(--card);border:1px solid var(--line);padding:5px 10px;border-radius:99px;font-size:12px;font-weight:500;cursor:pointer;font-family:inherit;color:var(--ink2);transition:.15s}
+.preset:hover{background:var(--yellow-soft);border-color:var(--yellow)}
+.preset .k{color:var(--ink3);font-size:10px;font-family:"Inter Tight",sans-serif}
+.drink-totals{display:flex;justify-content:space-between;padding:8px 0 2px;border-top:1px dashed var(--line);font-size:12px;color:var(--ink2)}
+.drink-totals strong{color:var(--ink);font-size:14px;font-family:"Inter Tight",sans-serif}
+.drink-totals .warn{color:#D8554A;font-weight:600}
+.ai-hint{margin-top:8px;padding:8px 10px;background:var(--purple-soft);border-radius:10px;font-size:11px;color:#7C5FC4;line-height:1.5;display:flex;gap:6px;align-items:flex-start}
+.ai-hint::before{content:"🤖";font-size:14px;line-height:1}
+.periodic{background:var(--card);border-radius:var(--r-card);box-shadow:var(--shadow);padding:8px 8px;margin-bottom:18px}
+.periodic .item{padding:8px 10px}
+.periodic .item .ico{width:34px;height:34px;border-radius:10px;background:var(--blue-soft);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;align-items:center;justify-content:center}
+.periodic .item .name{flex:1;font-size:14px;font-weight:500;line-height:1.3}
+.periodic .item .name .f{font-size:11px;color:var(--ink3);margin-top:2px;font-weight:400}
+.periodic .item .chip{font-size:11px;font-weight:600;padding:4px 10px;border-radius:99px;background:var(--yellow-soft);color:var(--yellow-deep);white-space:nowrap;margin-left:8px}
+.periodic .item .chip.coral{background:var(--coral-soft);color:#D8554A}
+.periodic .item .chip.green{background:var(--green-soft);color:var(--green-deep)}
+.periodic .item .chip.blue{background:var(--blue-soft);color:#3F87B0}
+.periodic .item .chip.purple{background:var(--purple-soft);color:#7C5FC4}
+.periodic .item .chip.dim{background:#F2EEE5;color:var(--ink3)}
+.periodic .item.done .name{color:var(--ink3);text-decoration:line-through;text-decoration-thickness:1px;text-decoration-color:var(--ink3)}
+.periodic .item .chk{width:22px;height:22px;border-radius:11px;border:1.5px solid var(--line2);display:flex;align-items:center;justify-content:center;flex-shrink:0;background:#fff;transition:.25s}
+.periodic .item.done .chk{background:var(--yellow);border-color:var(--yellow)}
+.periodic .item .chk svg{display:none;width:13px;height:13px}
+.periodic .item.done .chk svg{display:block}
+.cal-header{display:flex;align-items:center;justify-content:space-between;margin:6px 0 14px}
+.cal-header .nav{display:flex;align-items:center;gap:6px}
+.cal-header h2{margin:0;font-size:22px;font-weight:700;font-family:"Inter Tight","Inter",sans-serif;letter-spacing:-.02em}
+.cal-header .nav button{width:32px;height:32px;border-radius:50%;border:none;background:var(--card);box-shadow:var(--shadow);cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--ink);font-size:18px;font-weight:600;line-height:1}
+.cal-header .today{font-size:12px;font-weight:600;background:var(--yellow);color:var(--ink);padding:7px 14px;border-radius:99px;border:none;cursor:pointer;font-family:"Inter",sans-serif}
+.cal-card{background:var(--card);border-radius:var(--r-card);box-shadow:var(--shadow);padding:10px 8px;margin-bottom:14px}
+.cal-weekdays{display:grid;grid-template-columns:repeat(7,1fr);padding:6px 6px 8px;border-bottom:1px solid var(--line)}
+.cal-weekdays div{text-align:center;font-size:11px;font-weight:600;color:var(--ink3);letter-spacing:.05em}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;padding:6px 4px 4px}
+.cal-cell{min-height:46px;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:4px 0 0;border-radius:10px;cursor:pointer;font-family:"Inter Tight","Inter",sans-serif;font-weight:500;font-size:13px;position:relative;color:var(--ink);transition:.15s;overflow:hidden}
+.cal-cell:active{background:var(--yellow-soft)}
+.cal-cell.dim{color:var(--ink3);opacity:.3}
+.cal-cell .day-wrap{position:relative;width:30px;height:30px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.cal-cell .day-ring{position:absolute;inset:0}
+.cal-cell .day-ring circle{transition:stroke-dashoffset .4s}
+.cal-cell .num{position:relative;z-index:1;font-weight:600;font-size:13px;color:var(--ink)}
+.cal-cell.today .num{color:#fff;font-weight:700}
+.cal-cell.today .day-wrap{background:var(--yellow);border-radius:50%;box-shadow:0 2px 6px var(--accent-glow)}
+.cal-cell.today .day-ring{opacity:0}
+.cal-cell .dots{display:flex;gap:2px;margin-top:3px;height:4px;align-items:center;flex-shrink:0}
+.cal-cell .dots i{width:4px;height:4px;border-radius:50%;display:block}
+.dot-y{background:var(--yellow)}
+.dot-c{background:var(--coral)}
+.dot-b{background:var(--blue)}
+.dot-g{background:var(--green)}
+.dot-p{background:var(--purple)}
+.dot-h{background:#A8C99B;border:1px solid #6BA555}
+.day-detail{background:var(--card);border-radius:var(--r-card);box-shadow:var(--shadow);padding:16px;margin-bottom:14px}
+.day-detail h4{margin:0 0 4px;font-size:16px;font-weight:600}
+.day-detail .sub{font-size:12px;color:var(--ink2);margin-bottom:12px;line-height:1.5}
+.day-detail .strip{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap}
+.day-detail .strip span{font-size:11px;font-weight:500;padding:3px 8px;border-radius:99px;background:var(--yellow-soft);color:var(--yellow-deep)}
+.day-detail .strip span.coral{background:var(--coral-soft);color:#D8554A}
+.day-detail .strip span.blue{background:var(--blue-soft);color:#3F87B0}
+.day-detail .strip span.green{background:var(--green-soft);color:var(--green-deep)}
+.day-detail .strip span.purple{background:var(--purple-soft);color:#7C5FC4}
+.day-detail .logged{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 4px}
+.day-detail .logged span{font-size:11px;background:var(--green-soft);color:var(--green-deep);padding:4px 10px;border-radius:99px;font-weight:500}
+.day-detail .logged span.milk{background:var(--green);color:#fff}
+.day-detail .logged span.history{background:#F2EEE5;color:var(--ink2)}
+.day-detail .logged span::before{content:"✓ ";font-weight:700}
+.day-detail .dh{margin:12px 0 6px;font-size:12px;font-weight:600;color:var(--ink2);letter-spacing:.04em;text-transform:uppercase}
+.day-detail .mini{display:flex;align-items:center;gap:10px;padding:6px 0;font-size:13px}
+.day-detail .mini .chk{width:18px;height:18px;border-radius:50%;background:var(--yellow);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.day-detail .mini .chk svg{width:10px;height:10px;display:block}
+.day-detail .alert{margin-top:10px;padding:10px 12px;border-radius:12px;font-size:12.5px;display:flex;align-items:center;gap:8px;line-height:1.4}
+.day-detail .alert.y{background:var(--yellow-soft);color:var(--yellow-deep)}
+.day-detail .alert.c{background:var(--coral-soft);color:#D8554A}
+.day-detail .alert.g{background:var(--green-soft);color:var(--green-deep)}
+.day-detail .pct-bar{height:6px;background:var(--yellow-soft);border-radius:99px;overflow:hidden;margin-top:8px}
+.day-detail .pct-bar i{display:block;height:100%;background:linear-gradient(90deg,var(--yellow-soft),var(--yellow));border-radius:99px;transition:.4s}
+.legend{display:flex;flex-wrap:wrap;gap:10px;margin-top:4px;padding:0 4px}
+.legend span{font-size:11px;color:var(--ink2);display:inline-flex;align-items:center;gap:5px}
+.legend i{width:7px;height:7px;border-radius:50%}
+.rules-header{display:flex;align-items:center;justify-content:space-between;margin:6px 0 14px}
+.rules-header h2{margin:0;font-size:20px;font-weight:600}
+.add-btn{background:var(--yellow);color:var(--ink);font-weight:600;font-size:13px;padding:8px 16px;border-radius:99px;border:none;cursor:pointer;display:inline-flex;align-items:center;gap:4px;font-family:inherit;box-shadow:0 3px 8px var(--accent-glow)}
+.cat-card{background:var(--card);border-radius:var(--r-card);box-shadow:var(--shadow);padding:14px 16px;margin-bottom:14px}
+.cat-head{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.cat-icon{width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.cat-icon.coral{background:var(--coral-soft);color:#D8554A}
+.cat-icon.blue{background:var(--blue-soft);color:#3F87B0}
+.cat-icon.yellow{background:var(--yellow-soft);color:var(--yellow-deep)}
+.cat-icon.green{background:var(--green-soft);color:var(--green-deep)}
+.cat-icon.purple{background:var(--purple-soft);color:#7C5FC4}
+.cat-head h4{margin:0;font-size:15px;font-weight:600;flex:1}
+.cat-head .cnt{font-size:12px;color:var(--ink3);background:#F7F1E2;padding:2px 8px;border-radius:99px}
+.rule-row{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px dashed var(--line)}
+.rule-row:last-child{border-bottom:none}
+.rule-row .nm{flex:1;font-size:13.5px;line-height:1.3}
+.rule-row .chip{font-size:10.5px;font-weight:600;padding:4px 9px;border-radius:99px;background:var(--yellow-soft);color:var(--yellow-deep);white-space:nowrap;letter-spacing:.02em}
+.rule-row .chip.blue{background:var(--blue-soft);color:#3F87B0}
+.rule-row .chip.coral{background:var(--coral-soft);color:#D8554A}
+.rule-row .chip.green{background:var(--green-soft);color:var(--green-deep)}
+.rule-row .chip.purple{background:var(--purple-soft);color:#7C5FC4}
+.rule-row.custom .chip{background:#2D2A26;color:var(--yellow)}
+.confetti{position:fixed;width:8px;height:8px;border-radius:2px;pointer-events:none;z-index:9999;animation:pop 1.2s cubic-bezier(.2,.7,.3,1) forwards}
+@keyframes pop{0%{transform:translate(0,0) rotate(0);opacity:1}100%{transform:translate(var(--tx),var(--ty)) rotate(var(--r));opacity:0}}
+.plusone{position:absolute;font-family:"Inter Tight","Inter",sans-serif;font-weight:700;color:var(--yellow);font-size:18px;pointer-events:none;z-index:99;animation:rise .9s ease-out forwards;text-shadow:0 1px 2px rgba(0,0,0,.08)}
+@keyframes rise{0%{transform:translateY(0) scale(.4);opacity:0}20%{opacity:1;transform:translateY(-12px) scale(1.15)}100%{transform:translateY(-46px) scale(1);opacity:0}}
+.toast{position:fixed;left:50%;top:30%;transform:translateX(-50%);background:linear-gradient(135deg,var(--yellow) 0%,var(--yellow-deep) 100%);color:var(--ink);font-weight:700;font-size:14px;padding:12px 22px;border-radius:99px;box-shadow:0 8px 24px var(--accent-glow);z-index:9998;animation:toastIn .4s ease,toastOut .4s ease 1.6s forwards;pointer-events:none;font-family:inherit}
+@keyframes toastIn{from{opacity:0;transform:translateX(-50%) translateY(20px) scale(.8)}to{opacity:1;transform:translateX(-50%) translateY(0) scale(1)}}
+@keyframes toastOut{to{opacity:0;transform:translateX(-50%) translateY(-20px) scale(.95)}}
+@media (max-width:420px){body{background:var(--bg);padding:0}.app-frame{width:100vw;height:100vh;max-height:none;border-radius:0;box-shadow:none}}
+/* === PWA 全屏模式（iOS 独立窗口 / Android 安装后）安全区适配 === */
+html.pwa-standalone body{padding:0}
+html.pwa-standalone .app-frame{width:100vw;height:100vh;height:100dvh;max-height:none;border-radius:0;box-shadow:none;padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)}
+html.pwa-standalone .tabbar{padding-bottom:calc(8px + env(safe-area-inset-bottom))}
+html.pwa-standalone .status-bar{display:none}
+/* === 自定义背景图层（静态 DOM 节点） === */
+.app-bg-layer{position:absolute;inset:0;background-size:cover;background-position:center;background-repeat:no-repeat;opacity:0;z-index:0;pointer-events:none;transition:opacity .35s ease,backdrop-filter .35s ease;border-radius:inherit;background-color:transparent;background-image:none}
+.app-frame >*:not(.app-bg-layer){position:relative;z-index:1}
+/* === 毛玻璃模式：所有卡片 + 顶栏 + 标签栏都磨砂化 === */
+.app-frame.glass .app-bg-layer{opacity:1;backdrop-filter:blur(14px) saturate(160%);-webkit-backdrop-filter:blur(14px) saturate(160%)}
+.app-frame.glass .week,.app-frame.glass .progress,.app-frame.glass .water,.app-frame.glass .checklist,.app-frame.glass .drink,.app-frame.glass .cal,.app-frame.glass .me-stat,.app-frame.glass .bg-module,.app-frame.glass .about-card,.app-frame.glass .rule-card,.app-frame.glass .rule-chip,.app-frame.glass .ring,.app-frame.glass .detail,.app-frame.glass .daily-item,.app-frame.glass .periodic-item,.app-frame.glass .toast,.app-frame.glass .weekday-head{background:rgba(255,250,240,.62)!important;backdrop-filter:blur(18px) saturate(180%);-webkit-backdrop-filter:blur(18px) saturate(180%);box-shadow:0 2px 14px rgba(60,40,10,.06)!important}
+.app-frame.glass .tabbar .bar{background:rgba(255,250,240,.72)!important;backdrop-filter:blur(22px) saturate(200%);-webkit-backdrop-filter:blur(22px) saturate(200%);border-color:rgba(255,200,87,.25)}
+.app-frame.glass .status-bar{color:var(--ink)}
+.app-frame.glass .week .num{color:var(--ink)}
+.app-frame.glass .screen{background:transparent}
+/* === 自适应主题色（根据主色覆盖） === */
+.app-frame.theme-warm .tab.active{box-shadow:0 3px 12px var(--accent-glow,rgba(255,200,87,.5))}
+@keyframes spin{to{transform:rotate(360deg)}}
+/* === ME 页（我的） === */
+.me-header{display:flex;align-items:center;gap:14px;margin:6px 0 14px;padding:2px}
+.me-avatar{width:54px;height:54px;font-size:22px}
+.me-header h2{margin:0 0 3px;font-size:20px;font-weight:700;letter-spacing:-.01em}
+.me-tagline{margin:0;font-size:12px;color:var(--ink2);line-height:1.5}
+.me-stat{background:var(--card);border-radius:var(--r-card);box-shadow:var(--shadow);display:flex;align-items:center;justify-content:space-around;padding:14px 10px;margin-bottom:18px;gap:8px}
+.stat-item{display:flex;flex-direction:column;align-items:center;flex:1}
+.stat-num{font-size:22px;font-weight:700;font-family:"Inter Tight";color:var(--ink);letter-spacing:-.5px;line-height:1.1}
+.stat-label{font-size:10.5px;color:var(--ink3);margin-top:4px;font-weight:500}
+.stat-divider{width:1px;height:30px;background:var(--line)}
+.me-section-title{margin:8px 4px 10px;padding-left:4px;font-size:12px;font-weight:600;color:var(--ink2);letter-spacing:.04em;text-transform:uppercase}
+/* === 背景模块 === */
+.bg-module{background:var(--card);border-radius:var(--r-card);box-shadow:var(--shadow);padding:16px;margin-bottom:16px}
+.bg-module-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;gap:10px}
+.bg-module-title{display:flex;gap:12px;flex:1;min-width:0}
+.bg-icon{font-size:22px;line-height:1;flex-shrink:0}
+.bg-title-text{font-size:14px;font-weight:600;color:var(--ink);line-height:1.3}
+.bg-subtitle{font-size:11px;color:var(--ink3);margin-top:3px;line-height:1.4}
+.bg-icon-btn{width:38px;height:38px;border-radius:50%;background:var(--yellow-soft);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--ink2);transition:.15s;flex-shrink:0}
+.bg-icon-btn:hover{background:var(--yellow);color:#fff;border-color:var(--yellow)}
+.bg-icon-btn svg{width:16px;height:16px}
+.bg-preview-row{margin-bottom:12px}
+.bg-preview{width:100%;height:130px;border-radius:14px;background:var(--yellow-soft);background-size:cover;background-position:center;display:flex;align-items:center;justify-content:center;border:2px dashed var(--line2);transition:.2s;overflow:hidden;position:relative}
+.bg-preview.has-bg{border-style:solid;border-color:transparent;box-shadow:var(--shadow)}
+.bg-empty-state{color:var(--ink3);font-size:12px}
+.bg-control{margin-bottom:14px}
+.bg-control-label{display:flex;justify-content:space-between;font-size:13px;color:var(--ink);font-weight:500;margin-bottom:6px}
+.bg-control-val{color:var(--ink2);font-family:"Inter Tight";font-weight:600}
+.bg-control input[type=range]{width:100%;-webkit-appearance:none;height:5px;background:var(--line);border-radius:99px;outline:none}
+.bg-control input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:var(--yellow);cursor:pointer;border:3px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.18)}
+.bg-control input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;background:var(--yellow);cursor:pointer;border:3px solid #fff}
+.bg-presets{margin-bottom:14px}
+.bg-presets-label{font-size:11.5px;color:var(--ink2);font-weight:500;margin-bottom:8px}
+.bg-presets-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.bg-preset{height:42px;border-radius:10px;border:2px solid var(--line);cursor:pointer;padding:0;transition:.15s;background-size:cover;background-position:center}
+.bg-preset:hover{transform:translateY(-2px);border-color:var(--yellow)}
+.bg-preset.active{border-color:var(--yellow-deep);box-shadow:0 2px 6px rgba(198,138,31,.3)}
+.bg-reset-btn{width:100%;padding:10px;background:transparent;border:1px solid var(--line);border-radius:12px;color:var(--ink2);font-weight:500;font-size:13px;cursor:pointer;font-family:inherit;transition:.15s}
+.bg-reset-btn:hover{background:var(--coral-soft);color:#D8554A;border-color:var(--coral)}
+/* === 毛玻璃模式开关 === */
+.glass-module{background:var(--card);border-radius:var(--r-card);box-shadow:var(--shadow);padding:16px;margin-bottom:16px}
+.glass-row{display:flex;align-items:center;justify-content:space-between;gap:14px}
+.glass-info{display:flex;align-items:flex-start;gap:12px;flex:1;min-width:0}
+.glass-icon{font-size:22px;line-height:1;flex-shrink:0;margin-top:1px}
+.glass-title{font-size:14px;font-weight:600;color:var(--ink);line-height:1.3}
+.glass-subtitle{font-size:11px;color:var(--ink3);margin-top:3px;line-height:1.4}
+.switch{cursor:pointer;position:relative;display:inline-block;width:46px;height:26px;flex-shrink:0}
+.switch input{opacity:0;width:0;height:0;position:absolute}
+.switch .track{position:absolute;inset:0;background:#E5D198;border-radius:99px;transition:.25s;display:block}
+.switch .knob{position:absolute;left:3px;top:3px;width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.18);transition:.25s;display:block}
+.switch input:checked + .track{background:var(--yellow)}
+.switch input:checked + .track .knob{transform:translateX(20px)}
+.glass-tip{font-size:11px;color:var(--ink2);line-height:1.6;background:#FFFAEC;padding:10px 12px;border-radius:10px;margin-top:12px;border:1px dashed var(--line2);display:none}
+.glass-tip.show{display:block;animation:fade .25s ease}
+/* === 关于卡片 === */
+.about-card{background:var(--card);border-radius:var(--r-card);box-shadow:var(--shadow);padding:14px 16px;margin-top:14px}
+.about-card h4{margin:0 0 6px;font-size:13.5px;font-weight:600}
+.about-card p{margin:0;font-size:12px;color:var(--ink2);line-height:1.5}
+.about-version{font-size:10.5px;color:var(--ink3);margin-top:8px !important;letter-spacing:.04em}
+/* === 头像自定义 === */
+.avatar-letter{z-index:1}
+.avatar .avatar-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none;z-index:2}
+.avatar.has-img .avatar-letter{display:none}
+.avatar.has-img .avatar-img{display:block}
+.me-avatar{cursor:pointer}
+.me-avatar .avatar-overlay{position:absolute;inset:0;background:rgba(0,0,0,.55);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;opacity:0;transition:.2s;font-size:10px;font-weight:600;line-height:1;letter-spacing:.04em;z-index:3}
+.me-avatar:hover .avatar-overlay{opacity:1}
+.me-avatar .avatar-overlay svg{width:18px;height:18px;display:block}
+.avatar-reset{background:none;border:none;color:var(--ink3);font-size:11px;padding:4px 0 0;cursor:pointer;text-decoration:underline;font-family:inherit;display:inline-block;letter-spacing:.02em;transition:.15s}
+.avatar-reset:hover{color:var(--coral)}
+.avatar-reset[hidden]{display:none}
+</style>
+</head>
+<body>
+<div class="app-frame">
+  <div class="app-bg-layer" id="appBgLayer"></div>
+  <div class="status-bar">
+    <div>9:41</div>
+    <div class="right">
+      <div class="signal"><i></i><i></i><i></i><i></i></div>
+      <div class="battery"><i></i></div>
+    </div>
+  </div>
+  <div class="screens">
+    <div class="screen active" id="screen-today">
+      <div class="greeting">
+        <div class="txt">
+          <h1>早上好 ☀</h1>
+          <div class="date">9月19日 · 周六 · 秋分</div>
+        </div>
+        <div class="avatar"><span class="avatar-letter">彭</span><img class="avatar-img" src="" alt=""></div>
+      </div>
+      <div class="week" id="weekstrip"></div>
+      <div class="progress">
+        <div class="ring" id="ring">
+          <svg width="84" height="84" viewBox="0 0 84 84">
+            <circle cx="42" cy="42" r="36" fill="none" stroke="#FFF3D9" stroke-width="8"/>
+            <circle id="ringFg" cx="42" cy="42" r="36" fill="none" stroke="#FFC857" stroke-width="8" stroke-linecap="round" stroke-dasharray="226" stroke-dashoffset="68"/>
+          </svg>
+          <div class="pct" id="ringPct">70%</div>
+        </div>
+        <div class="info">
+          <div class="h" id="progH">今日 9 项，已完成 6</div>
+          <div class="sub" id="progSub">继续努力，今天还剩 3 项</div>
+          <div class="bar"><i id="progBar" style="width:70%"></i></div>
+          <div class="streak">🔥 连续打卡 12 天</div>
+        </div>
+      </div>
+      <div class="sec-title"><h3>饮水打卡</h3><span class="more">每杯 500ml</span></div>
+      <div class="list">
+        <div class="item water" id="waterItem">
+          <div class="top">
+            <div class="chk"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 12 10 17 19 8"/></svg></div>
+            <div class="water-cups" id="waterCups"></div>
+            <div class="water-summary" id="waterSummary"><strong>900</strong>ml</div>
+          </div>
+          <div class="water-row">
+            <button class="water-btn" id="waterPlus">＋ 500ml</button>
+            <button class="water-btn minus" id="waterMinus">− 500ml</button>
+          </div>
+        </div>
+      </div>
+      <div class="sec-title"><h3>饮料记录</h3><span class="more">拍照 · AI 识别热量</span></div>
+      <div class="drink-card" id="drinkCard">
+        <div class="drink-head">
+          <div class="ttl">🥤 今日饮料 <span class="badge" id="aiBadge">AI 待接入</span></div>
+          <div class="cnt" id="drinkCnt">本月 0 / 1</div>
+        </div>
+        <div class="drinks-list" id="drinksList">
+          <div class="drink-add" id="drinkAdd">
+            <span>＋</span>
+            <span class="hint">拍照 · 上传</span>
+          </div>
+        </div>
+        <div class="preset-row" id="presetRow"></div>
+        <div class="drink-totals">
+          <span>今日热量 <strong id="totalKcal">0</strong> kcal</span>
+          <span>糖分 <strong id="totalSugar">0</strong> g <span id="sugarWarn" style="display:none" class="warn">· 已超额</span></span>
+        </div>
+        <input type="file" id="drinkFile" accept="image/*" capture="environment" style="display:none">
+        <div class="ai-hint">拍照上传后，WorkBuddy AI 会帮你识别饮料种类和估算热量。流程：保存图片 → 把图片发给 AI（对话窗口）→ AI 告诉你这杯是什么 · 大约多少 kcal → 选预设完成记录。</div>
+      </div>
+      <div class="sec-title"><h3>每日打卡</h3><span class="more">7 项</span></div>
+      <div class="list" id="dailyList"></div>
+      <div class="sec-title"><h3>今日周期事项</h3><span class="more">点选完成</span></div>
+      <div class="periodic" id="periodicList"></div>
+    </div>
+    <div class="screen" id="screen-cal">
+      <div class="cal-header">
+        <div class="nav">
+          <button aria-label="上一月">‹</button>
+          <h2>九月 2026</h2>
+          <button aria-label="下一月">›</button>
+        </div>
+        <button class="today" id="goToday">今天</button>
+      </div>
+      <div class="cal-card">
+        <div class="cal-weekdays">
+          <div>一</div><div>二</div><div>三</div><div>四</div><div>五</div><div>六</div><div>日</div>
+        </div>
+        <div class="cal-grid" id="calGrid"></div>
+      </div>
+      <div class="sec-title"><h3 id="calSelH">9月19日 · 周六</h3><span class="more" id="calSelSub">今天</span></div>
+      <div class="day-detail" id="dayDetail"></div>
+      <div class="legend">
+        <span><i class="dot-y"></i>床上用品</span>
+        <span><i class="dot-c"></i>洗衣</span>
+        <span><i class="dot-b"></i>清洁</span>
+        <span><i class="dot-p"></i>家人视频</span>
+        <span><i class="dot-g"></i>饮料 / 运动</span>
+        <span><i class="dot-h"></i>已记录</span>
+      </div>
+    </div>
+    <div class="screen" id="screen-rules">
+      <div class="rules-header">
+        <h2>我的 SOP 规则库</h2>
+        <button class="add-btn">＋ 添加</button>
+      </div>
+      <div id="rulesList"></div>
+    </div>
+    <div class="screen" id="screen-me">
+      <div class="me-header">
+        <div class="avatar me-avatar" id="meAvatar" title="点击更换头像">
+          <span class="avatar-letter">彭</span>
+          <img class="avatar-img" src="" alt="">
+          <div class="avatar-overlay">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+            <span>换头像</span>
+          </div>
+        </div>
+        <div style="flex:1;min-width:0">
+          <h2>彭彭</h2>
+          <p class="me-tagline" id="meTagline">把今天过成一首有节奏的小调，先从不忘喝水开始 🎵💧</p>
+          <button class="avatar-reset" id="avatarReset" hidden>↺ 恢复默认头像</button>
+        </div>
+      </div>
+      <div class="me-stat">
+        <div class="stat-item">
+          <div class="stat-num">12</div>
+          <div class="stat-label">连续打卡</div>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <div class="stat-num">78%</div>
+          <div class="stat-label">本月完成率</div>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <div class="stat-num">25</div>
+          <div class="stat-label">记录天数</div>
+        </div>
+      </div>
+      <h3 class="me-section-title">我的偏好</h3>
+      <div class="bg-module">
+        <div class="bg-module-head">
+          <div class="bg-module-title">
+            <span class="bg-icon">🎨</span>
+            <div>
+              <div class="bg-title-text">背景图片</div>
+              <div class="bg-subtitle">选一张图做背景，让你的 App 更有你的味道</div>
+            </div>
+          </div>
+          <button class="bg-icon-btn" id="bgUploadBtn" title="上传图片">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+          </button>
+        </div>
+        <input type="file" id="bgFile" accept="image/*" style="display:none">
+        <div class="bg-preview-row">
+          <div class="bg-preview" id="bgPreview">
+            <span class="bg-empty-state">未设置 · 使用默认奶油黄渐变</span>
+          </div>
+        </div>
+        <div class="bg-control">
+          <div class="bg-control-label">
+            <span>透明度</span>
+            <span class="bg-control-val" id="bgOpacityVal">18%</span>
+          </div>
+          <input type="range" id="bgOpacitySlider" min="5" max="40" value="18">
+        </div>
+        <div class="bg-presets">
+          <div class="bg-presets-label">快速预设</div>
+          <div class="bg-presets-grid">
+            <button class="bg-preset" data-bg="sunset" style="background-image:linear-gradient(135deg,#FFD580,#FF8C7A)" title="暖橙落日"></button>
+            <button class="bg-preset" data-bg="lavender" style="background-image:linear-gradient(135deg,#B79CED,#FFC8DD)" title="薰衣草"></button>
+            <button class="bg-preset" data-bg="sky" style="background-image:linear-gradient(135deg,#6BB6E0,#FFFAF0)" title="晴空"></button>
+            <button class="bg-preset" data-bg="meadow" style="background-image:linear-gradient(135deg,#7BB661,#FFC857)" title="青草地"></button>
+            <button class="bg-preset" data-bg="mono" style="background-image:linear-gradient(135deg,#E5D198,#FFFAF0)" title="暖米白"></button>
+          </div>
+        </div>
+        <button class="bg-reset-btn" id="bgResetBtn">清除背景 · 恢复默认</button>
+      </div>
+      <h3 class="me-section-title">外观模式</h3>
+      <div class="glass-module">
+        <div class="glass-row">
+          <div class="glass-info">
+            <span class="glass-icon">🪟</span>
+            <div>
+              <div class="glass-title">毛玻璃模式</div>
+              <div class="glass-subtitle\">类似 iOS · 卡片半透明 + 背景模糊，整套 App 跟着背景图片换气质</div>
+            </div>
+          </div>
+          <label class="switch" id="glassSwitch">
+            <input type="checkbox" id="glassToggle">
+            <span class="track"><span class="knob"></span></span>
+          </label>
+        </div>
+        <div class="glass-tip" id="glassTip">开启后所有卡片 / 顶栏 / 标签栏都会变得半透明朦胧，像 iOS 一样美。</div>
+      </div>
+      <h3 class="me-section-title">关于</h3>
+      <div class="about-card">
+        <h4>关于「今日节律」</h4>
+        <p>把日常 SOP 锚定到日历上的个人生活节律工具。今天的每一杯水、每一次勾选，都被记进日历里。</p>
+        <p class="about-version">v1.0 · 温柔地陪你过日子</p>
+        <p class="about-version">开发商 · 彭彭</p>
+      </div>
+    </div>
+  </div>
+  <div class="tabbar">
+    <div class="bar">
+      <div class="tab active" data-screen="today">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+        <span>TODAY</span>
+      </div>
+      <div class="tab" data-screen="cal">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>
+        <span>CAL</span>
+      </div>
+      <div class="tab" data-screen="rules">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h10"/></svg>
+        <span>RULES</span>
+      </div>
+      <div class="tab" data-screen="me">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-7 8-7s8 3 8 7"/></svg>
+        <span>ME</span>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+const TODAY=new Date(2026,8,19);
+const TODAY_KEY=dateKey(TODAY);
+const weekDays=["一","二","三","四","五","六","日"];
+function dateKey(d){return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");}
+function thisMonth(d){return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0");}
+const store={
+  get(k,d){try{const v=localStorage.getItem("sop_"+k);return v===null?d:JSON.parse(v)}catch(e){return d}},
+  set(k,v){try{localStorage.setItem("sop_"+k,JSON.stringify(v))}catch(e){}},
+};
+
+// ===== Drink presets =====
+const drinkPresets=[
+  {id:"coffee_ame", name:"美式咖啡", icon:"☕", kcal:5, sugar:0, caffeine:true},
+  {id:"latte", name:"拿铁", icon:"🥛", kcal:120, sugar:10, caffeine:true},
+  {id:"bubble", name:"珍珠奶茶", icon:"🧋", kcal:350, sugar:45, caffeine:true},
+  {id:"matcha", name:"抹茶拿铁", icon:"🍵", kcal:200, sugar:20, caffeine:true},
+  {id:"oj", name:"鲜榨橙汁", icon:"🍊", kcal:110, sugar:22, caffeine:false},
+  {id:"lemon_tea", name:"柠檬茶", icon:"🍋", kcal:200, sugar:24, caffeine:false},
+  {id:"water", name:"矿泉水", icon:"💧", kcal:0, sugar:0, caffeine:false},
+  {id:"cola", name:"可乐", icon:"🥤", kcal:140, sugar:35, caffeine:false},
+  {id:"beer", name:"啤酒", icon:"🍺", kcal:150, sugar:13, caffeine:false},
+  {id:"yogurt", name:"酸奶饮料", icon:"🥛", kcal:100, sugar:15, caffeine:false},
+];
+
+// ===== State =====
+let water=store.get("water",900);
+let drinks=store.get("drinks",{}); // {dateKey: [{id, name, icon, kcal, sugar, caffeine, photo, time}]}
+let dailyDone=store.get("daily",{});
+let periodicDone=store.get("periodic",{});
+const dailyItems=[
+  {id:"wake",label:"7:00 早起",meta:"已 07:02",done:true},
+  {id:"breakfast",label:"吃早饭",meta:"✓",done:true},
+  {id:"fish",label:"鱼油",meta:"饭后",done:true},
+  {id:"poop",label:"排便",meta:"今日",done:false},
+  {id:"brush",label:"刷牙 · 洗澡 · 护肤",meta:"早 + 晚",done:false},
+  {id:"footbath",label:"泡脚",meta:"睡前",done:false},
+  {id:"phone",label:"23:00 放下手机",meta:"倒计时 6h",done:false},
+];
+dailyItems.forEach(it=>{if(dailyDone[it.id]!==undefined)it.done=dailyDone[it.id];});
+
+const periodicItems=[
+  {id:"sweep", ico:"🧹",name:"扫地拖地",freq:"每周六早上",chip:"blue",chipText:"今日"},
+  {id:"kitchen", ico:"🍳",name:"厨房清洁",freq:"每周三",chip:"blue",chipText:"下周三"},
+  {id:"trash", ico:"🗑️",name:"倒垃圾",freq:"每 2-3 天",chip:"dim",chipText:"明天"},
+  {id:"bedding", ico:"🛏️",name:"床单被套换洗",freq:"每 14 天 · 周末",chip:"yellow",chipText:"下次 10/3"},
+  {id:"mom_call", ico:"📞",name:"妈妈视频电话",freq:"每周六",chip:"purple",chipText:"今天"},
+  {id:"dad_call", ico:"📞",name:"爸爸视频电话",freq:"每周日",chip:"purple",chipText:"明天"},
+];
+periodicItems.forEach(it=>{if(periodicDone[it.id]!==undefined)it.done=periodicDone[it.id];else it.done=false;});
+
+const sopMap={
+  3:[{c:"c",t:"洗衣服"}],
+  10:[{c:"c",t:"洗衣服"}],
+  12:[{c:"b",t:"扫地拖地"}],
+  16:[{c:"b",t:"厨房清洁"}],
+  17:[{c:"c",t:"洗衣服"}],
+  18:[{c:"h",t:"昨日：洗头洗澡"}],
+  19:[{c:"b",t:"扫地拖地"},{c:"y",t:"床单被套"},{c:"p",t:"妈妈电话"}],
+  20:[{c:"p",t:"爸爸电话"}],
+  23:[{c:"b",t:"厨房清洁"}],
+  24:[{c:"c",t:"洗衣服"}],
+  26:[{c:"b",t:"扫地拖地"},{c:"p",t:"妈妈电话"}],
+  27:[{c:"p",t:"爸爸电话"}],
+  30:[{c:"b",t:"厨房清洁"}],
+};
+let selDay=19;
+
+// ===== Per-day completion helper =====
+function getDayTotal(){
+  return dailyItems.length + 1 + periodicItems.length;
+}
+function getDayDone(dateKey){
+  // For 9/19 (today) use live state; for other dates with stored data use stored snapshot
+  if(dateKey===TODAY_KEY){
+    const waterDone=water>=1500?1:0;
+    const dailyCnt=dailyItems.filter(x=>x.done).length;
+    const perCnt=periodicItems.filter(x=>x.done).length;
+    return {total:getDayTotal(), done:waterDone+dailyCnt+perCnt};
+  }
+  // Past days: try to compute from sopMap + history
+  const dayNum=parseInt(dateKey.split("-")[2],10);
+  let total=0,done=0;
+  const scheduled=sopMap[dayNum]||[];
+  total+=scheduled.length;
+  done+=scheduled.length; // assume past scheduled items were completed
+  // history events count as done
+  const hist=historyMap[dateKey]||[];
+  done+=hist.length;
+  total+=hist.length;
+  // drinks as done
+  const drs=drinks[dateKey]||[];
+  done+=drs.length;
+  return {total:Math.max(total,1), done};
+}
+const historyMap={"2026-09-18":["洗头","洗澡"]};
+
+function saveTodayState(){
+  const s={dailyDone:{},periodicDone:{},water};
+  dailyItems.forEach(x=>s.dailyDone[x.id]=x.done);
+  periodicItems.forEach(x=>s.periodicDone[x.id]=x.done);
+  // Save per-day state under TODAY_KEY (snapshot for ring)
+  const all=store.get("perDay",{});
+  all[TODAY_KEY]=s;
+  store.set("perDay",all);
+}
+
+// ===== Water =====
+function renderWater(){
+  const cups=document.getElementById("waterCups");cups.innerHTML="";
+  const full=Math.floor(water/500);
+  const partial=water%500;
+  const allCups=Math.max(3,full+(partial>0?1:0));
+  for(let i=0;i<allCups;i++){
+    const col=document.createElement("div");col.className="cup-col";
+    let pct=0,cls="";
+    if(i<3){
+      if(i<full){pct=100;cls="full";}
+      else if(i===full&&partial>0){pct=partial/500*100;}
+      else pct=0;
+    } else {
+      if(i<full){pct=100;cls="over full";}
+      else if(i===full&&partial>0){pct=partial/500*100;cls="over";}
+      else {pct=0;cls="over";}
+    }
+    const num=(i+1)*500;
+    col.innerHTML=`<div class="cup ${cls}"><div class="fill" style="height:${pct}%"></div></div><div class="num">${num}</div>`;
+    cups.appendChild(col);
+  }
+  const sum=document.getElementById("waterSummary");
+  const over=water>1500;
+  sum.innerHTML=`<strong>${water}</strong>ml${over?' <span style="color:var(--blue);font-size:11px;font-weight:600">已超额</span>':''}`;
+  sum.classList.toggle("over",over);
+  document.getElementById("waterItem").classList.toggle("done",water>=1500);
+}
+document.getElementById("waterPlus").onclick=(e)=>{
+  const rect=e.currentTarget.getBoundingClientRect();
+  water+=500;store.set("water",water);renderWater();
+  updateProgress(true);saveTodayState();renderCal();
+  burst(rect.left+rect.width/2,rect.top+rect.height/2,10,['#6BB6E0','#FFC857','#7BB661','#FF8C7A']);
+  checkFullDay();
+};
+document.getElementById("waterMinus").onclick=(e)=>{
+  water=Math.max(0,water-500);store.set("water",water);renderWater();
+  updateProgress(false);saveTodayState();renderCal();
+};
+
+// ===== Drinks =====
+function renderDrinks(){
+  const list=document.getElementById("drinksList");
+  list.querySelectorAll(".drink-thumb,.drink-photo").forEach(n=>n.remove());
+  const today=(drinks[TODAY_KEY]||[]);
+  const add=document.getElementById("drinkAdd");
+  today.forEach((d,i)=>{
+    const t=document.createElement("div");
+    t.className="drink-thumb";
+    if(d.photo)t.innerHTML=`<img src="${d.photo}" alt=""><div class="kcal">${d.kcal}kcal</div><div class="x" data-i="${i}">×</div>`;
+    else t.innerHTML=`<span style="font-size:30px">${d.icon}</span><div class="kcal">${d.kcal}kcal · ${d.sugar}g</div><div class="x" data-i="${i}">×</div>`;
+    t.querySelector(".x").onclick=(e)=>{e.stopPropagation();today.splice(i,1);drinks[TODAY_KEY]=today;store.set("drinks",drinks);renderDrinks();renderCal();};
+    list.insertBefore(t,add);
+  });
+  // Totals
+  let k=0,s=0;
+  today.forEach(d=>{k+=d.kcal||0;s+=d.sugar||0;});
+  document.getElementById("totalKcal").textContent=k;
+  document.getElementById("totalSugar").textContent=s;
+  document.getElementById("sugarWarn").style.display=s>25?"inline":"none";
+  // Monthly caffeine cap
+  const month=thisMonth(TODAY);
+  let caffe=0,monthCount=0;
+  Object.entries(drinks).forEach(([k2,arr])=>{
+    if(k2.startsWith(month)){
+      monthCount+=arr.length;
+      arr.forEach(d=>{if(d.caffeine)caffe++;});
+    }
+  });
+  const cnt=document.getElementById("drinkCnt");
+  cnt.classList.toggle("over",caffe>1);
+  cnt.textContent=`含咖啡因 ${caffe}/1 · 饮料 ${monthCount} 杯`;
+}
+document.getElementById("drinkAdd").onclick=()=>document.getElementById("drinkFile").click();
+document.getElementById("drinkFile").onchange=async(e)=>{
+  const f=e.target.files[0];if(!f)return;
+  toast("🤖 AI 识别中...");
+  const dataUrl=await fileToCompressedDataUrl(f,480);
+  // Simulated AI: show preset picker overlay
+  showPresetPicker(dataUrl);
+  e.target.value="";
+};
+function showPresetPicker(photo){
+  // === WorkBuddy AI 识别引导式弹窗 ===
+  const overlay=document.createElement("div");
+  overlay.style.cssText="position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9999;display:flex;align-items:flex-end;justify-content:center;backdrop-filter:blur(2px);animation:fade .25s ease";
+  const sheet=document.createElement("div");
+  sheet.style.cssText="background:#FFFAF0;width:390px;max-width:100vw;border-radius:24px 24px 0 0;padding:20px;max-height:85vh;overflow:auto";
+  sheet.innerHTML=`
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+      <div style="font-weight:700;font-size:15px">🤖 WorkBuddy AI 识别</div>
+      <button id="cl" style="background:var(--card);border:1px solid var(--line);font-size:16px;cursor:pointer;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--ink2);line-height:1">×</button>
+    </div>
+    <div style="width:100%;height:170px;border-radius:14px;overflow:hidden;margin-bottom:12px;background:#FFFAF0;border:1px solid var(--line);display:flex;align-items:center;justify-content:center">
+      <img src="${photo}" alt="饮料照片" style="max-width:100%;max-height:100%;object-fit:contain">
+    </div>
+    <div id="ai-step" style="padding:12px 14px;background:var(--purple-soft);border-radius:12px;margin-bottom:12px;color:#7C5FC4;font-size:13px;font-weight:500;display:flex;align-items:center;gap:10px">
+      <div style="width:18px;height:18px;border:2px solid rgba(124,95,196,.25);border-top-color:#7C5FC4;border-radius:50%;animation:spin .8s linear infinite;flex-shrink:0"></div>
+      <span>WorkBuddy AI 通道已就绪 · 待你发送图片</span>
+    </div>
+    <button id="ai-dl" style="width:100%;padding:12px;background:linear-gradient(135deg,#7C5FC4,#B79CED);color:#fff;border:none;border-radius:12px;font-weight:600;font-size:13px;cursor:pointer;font-family:inherit;margin-bottom:10px;display:flex;align-items:center;justify-content:center;gap:6px">
+      <span style="font-size:14px">📥</span> 保存图片到设备（去对话中识别）
+    </button>
+    <div style="font-size:11px;color:var(--ink2);line-height:1.7;background:#FFFAEC;padding:10px 12px;border-radius:10px;margin-bottom:14px;border:1px dashed var(--line2)">
+      <strong style="color:var(--ink);font-weight:600">使用步骤：</strong><br>
+      ① 点击上方按钮把图片保存到设备<br>
+      ② 切到 WorkBuddy 对话窗口（就是我）<br>
+      ③ 把图片发给我，我会识别这杯是什么<br>
+      ④ 告诉你估算的热量 / 糖分<br>
+      ⑤ 回到这里选对应预设完成记录
+    </div>
+    <div style="text-align:center;font-size:11px;color:var(--ink3);margin:10px 0;letter-spacing:.04em;text-transform:uppercase">
+      — 或者直接选预设 —
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">${drinkPresets.map(p=>`
+      <button data-id="${p.id}" style="display:flex;align-items:center;gap:8px;padding:10px;background:#fff;border:1.5px solid var(--line);border-radius:14px;cursor:pointer;font-family:inherit;text-align:left">
+        <span style="font-size:22px">${p.icon}</span>
+        <span><div style="font-weight:600;font-size:13px">${p.name}</div><div style="font-size:10px;color:var(--ink3);font-family:Inter Tight">${p.kcal}kcal · ${p.sugar}g 糖</div></span>
+      </button>`).join("")}</div>`;
+  overlay.appendChild(sheet);
+  document.body.appendChild(overlay);
+  const cl=()=>overlay.remove();
+  sheet.querySelector("#cl").onclick=cl;
+  overlay.onclick=(e)=>{if(e.target===overlay)cl();};
+
+  // 图片下载 → 用户去对话中发给 AI 识别
+  sheet.querySelector("#ai-dl").onclick=()=>{
+    const link=document.createElement("a");
+    link.href=photo;
+    link.download=`drink_${Date.now()}.jpg`;
+    document.body.appendChild(link);link.click();document.body.removeChild(link);
+    const panel=sheet.querySelector("#ai-step");
+    panel.style.background="var(--green-soft)";
+    panel.innerHTML=`<span style="font-size:18px;color:var(--green-deep)">✓</span><span><strong style="color:var(--green-deep)">图片已保存到设备</strong> · 请到对话窗口发给 AI 识别</span>`;
+    toast("✅ 图片已下载 · 去对话中发给 AI");
+  };
+
+  sheet.querySelectorAll("button[data-id]").forEach(b=>b.onclick=()=>{
+    const p=drinkPresets.find(x=>x.id===b.dataset.id);
+    addDrink({...p, photo, time:new Date().toLocaleTimeString("zh",{hour:"2-digit",minute:"2-digit"})});
+    overlay.remove();
+    burst(window.innerWidth/2,window.innerHeight/2,40,['#B79CED','#FFC857','#7BB661','#FF8C7A']);
+  });
+}
+function addDrink(d){
+  const arr=drinks[TODAY_KEY]||[];arr.push(d);drinks[TODAY_KEY]=arr;
+  store.set("drinks",drinks);renderDrinks();renderCal();
+}
+function renderPresets(){
+  const row=document.getElementById("presetRow");row.innerHTML="";
+  drinkPresets.forEach(p=>{
+    const b=document.createElement("button");
+    b.className="preset";
+    b.innerHTML=`${p.icon} ${p.name} <span class="k">${p.kcal}kcal</span>`;
+    b.onclick=()=>addDrink({...p,time:new Date().toLocaleTimeString("zh",{hour:"2-digit",minute:"2-digit"})});
+    row.appendChild(b);
+  });
+}
+async function fileToCompressedDataUrl(file,max=480){
+  return new Promise((resolve)=>{
+    const img=new Image();
+    img.onload=()=>{
+      const scale=Math.min(1,max/Math.max(img.width,img.height));
+      const c=document.createElement("canvas");
+      c.width=Math.round(img.width*scale);c.height=Math.round(img.height*scale);
+      c.getContext("2d").drawImage(img,0,0,c.width,c.height);
+      URL.revokeObjectURL(img.src);
+      resolve(c.toDataURL("image/jpeg",0.7));
+    };
+    img.src=URL.createObjectURL(file);
+  });
+}
+
+// ===== Week strip =====
+function renderWeek(){
+  const start=new Date(TODAY);
+  const day=(start.getDay()+6)%7;
+  start.setDate(start.getDate()-day);
+  const el=document.getElementById("weekstrip");el.innerHTML="";
+  const dotsDays=[3,10,12,16,17,18,19,20,23,24,26,27,30];
+  for(let i=0;i<7;i++){
+    const d=new Date(start);d.setDate(start.getDate()+i);
+    const isToday=d.getTime()===TODAY.getTime();
+    const dk=dateKey(d);
+    const has=dotsDays.includes(d.getDate())||(drinks[dk]&&drinks[dk].length);
+    const div=document.createElement("div");
+    div.className="day"+(isToday?" today":"");
+    div.innerHTML=`<div class="dw">周${weekDays[i]}</div><div class="num">${d.getDate()}</div><div class="dot" style="visibility:${has?'visible':'hidden'}"></div>`;
+    el.appendChild(div);
+  }
+}
+
+// ===== Daily list =====
+function renderDaily(){
+  const el=document.getElementById("dailyList");el.innerHTML="";
+  dailyItems.forEach(it=>{
+    const d=document.createElement("div");d.className="item"+(it.done?" done":"");
+    d.innerHTML=`<div class="chk"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 12 10 17 19 8"/></svg></div>
+      <div class="label">${it.label}</div>
+      <div class="meta">${it.meta}</div>`;
+    d.onclick=(e)=>{
+      it.done=!it.done;dailyDone[it.id]=it.done;store.set("daily",dailyDone);
+      renderDaily();
+      const wasAll=it.done?isAllDone(true):isAllDone(false);
+      updateProgress(it.done);saveTodayState();renderCal();
+      if(it.done){
+        const r=e.currentTarget.getBoundingClientRect();
+        burst(r.left+22,r.top+r.height/2,12,['#FFC857','#FF8C7A','#6BB6E0','#7BB661','#B79CED']);
+        plusOne(r.left+r.width/2,r.top-4);
+      }
+      checkFullDay();
+    };
+    el.appendChild(d);
+  });
+}
+function isAllDone(prevWater){
+  const waterDone=(prevWater!==undefined?prevWater:water)>=1500;
+  return waterDone && dailyItems.every(it=>it.done);
+}
+function checkFullDay(){
+  if(isAllDone()){rain(50);toast("🎉 今日所有打卡完成 · 棒！");}
+}
+
+// ===== Progress =====
+function updateProgress(markDone){
+  const total=dailyItems.length+1+periodicItems.length;
+  const done=dailyItems.filter(x=>x.done).length+(water>=1500?1:0)+periodicItems.filter(x=>x.done).length;
+  const pct=Math.round(done/total*100);
+  document.getElementById("ringPct").textContent=pct+"%";
+  document.getElementById("progH").textContent=`今日 ${total} 项，已完成 ${done}`;
+  document.getElementById("progSub").textContent=`继续努力，今天还剩 ${total-done} 项`;
+  document.getElementById("progBar").style.width=pct+"%";
+  const C=2*Math.PI*36;
+  document.getElementById("ringFg").setAttribute("stroke-dashoffset",C*(1-pct/100));
+  if(markDone){
+    document.getElementById("ring").classList.remove("pulse");
+    void document.getElementById("ring").offsetWidth;
+    document.getElementById("ring").classList.add("pulse");
+  }
+}
+
+// ===== Periodic =====
+function renderPeriodic(){
+  const el=document.getElementById("periodicList");el.innerHTML="";
+  periodicItems.forEach(p=>{
+    const d=document.createElement("div");
+    d.className="item"+(p.done?" done":"");
+    d.innerHTML=`<div class="chk"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 12 10 17 19 8"/></svg></div>
+      <div class="ico">${p.ico}</div>
+      <div class="name">${p.name}<div class="f">${p.freq}</div></div>
+      <div class="chip ${p.chip}">${p.done?'✓ 已完成':p.chipText}</div>`;
+    d.onclick=(e)=>{
+      p.done=!p.done;periodicDone[p.id]=p.done;store.set("periodic",periodicDone);
+      renderPeriodic();
+      updateProgress(p.done);saveTodayState();renderCal();
+      if(p.done){
+        const r=e.currentTarget.getBoundingClientRect();
+        burst(r.left+22,r.top+r.height/2,10,['#FFC857','#7BB661','#B79CED']);
+        plusOne(r.left+r.width/2,r.top-4);
+      }
+      checkFullDay();
+    };
+    el.appendChild(d);
+  });
+}
+
+// ===== Calendar (with progress rings) =====
+function renderCal(){
+  const grid=document.getElementById("calGrid");grid.innerHTML="";
+  const firstDay=new Date(2026,8,1);
+  const offset=(firstDay.getDay()+6)%7;
+  const prevDays=new Date(2026,8,0).getDate();
+  for(let i=offset-1;i>=0;i--){
+    const c=document.createElement("div");c.className="cal-cell dim";c.textContent=prevDays-i;
+    grid.appendChild(c);
+  }
+  for(let d=1;d<=30;d++){
+    const c=document.createElement("div");c.className="cal-cell";
+    if(d===19)c.classList.add("today");
+    if(d===selDay)c.classList.add("selected");
+    const evs=[...(sopMap[d]||[])];
+    const dKey=`2026-09-${String(d).padStart(2,"0")}`;
+    if((drinks[dKey]||[]).length)evs.push({c:"g",t:"饮料"});
+    // progress ring for days with data
+    const pct=d===19?getTodayPct():getPastDayPct(dKey);
+    let ringHtml="";
+    if(pct!==null){
+      const C=2*Math.PI*15;
+      const off=C*(1-pct/100);
+      ringHtml=`<svg class="day-ring" viewBox="0 0 34 34"><circle cx="17" cy="17" r="15" fill="none" stroke="#FFF3D9" stroke-width="2.5"/><circle cx="17" cy="17" r="15" fill="none" stroke="#FFC857" stroke-width="2.5" stroke-dasharray="${C.toFixed(2)}" stroke-dashoffset="${off.toFixed(2)}" stroke-linecap="round" transform="rotate(-90 17 17)"/></svg>`;
+    }
+    const dotsHtml=evs.slice(0,4).map(e=>`<i class="dot-${e.c}"></i>`).join("");
+    c.innerHTML=`<div class="day-wrap">${ringHtml}<div class="num">${d}</div></div><div class="dots">${dotsHtml}</div>`;
+    c.onclick=()=>{selDay=d;renderCal();renderDayDetail();};
+    grid.appendChild(c);
+  }
+  const total=offset+30;
+  const fill=Math.ceil(total/7)*7-total;
+  for(let i=1;i<=fill;i++){
+    const c=document.createElement("div");c.className="cal-cell dim";c.textContent=i;
+    grid.appendChild(c);
+  }
+}
+function getTodayPct(){
+  const total=getDayTotal();
+  const done=dailyItems.filter(x=>x.done).length+(water>=1500?1:0)+periodicItems.filter(x=>x.done).length;
+  return Math.round(done/total*100);
+}
+function getPastDayPct(dateKey){
+  // For past dates we estimate based on recorded events
+  const dayNum=parseInt(dateKey.split("-")[2],10);
+  const scheduled=sopMap[dayNum]||[];
+  const hist=historyMap[dateKey]||[];
+  const drs=drinks[dateKey]||[];
+  if(!scheduled.length && !hist.length && !drs.length) return null;
+  const total=Math.max(scheduled.length+hist.length+drs.length,1);
+  const done=total; // assume all completed (past day)
+  return Math.round(done/Math.max(total,1)*100);
+}
+
+function renderDayDetail(){
+  const el=document.getElementById("dayDetail");
+  const dt=new Date(2026,8,selDay);
+  const dw=weekDays[(dt.getDay()+6)%7];
+  const isToday=selDay===19;
+  const items=sopMap[selDay]||[];
+  const dailyNames=["7:00 早起","吃早饭","鱼油","饮水 1.5L","排便","泡脚","23:00 放下手机"];
+  const dKey=`2026-09-${String(selDay).padStart(2,"0")}`;
+  const dayDrinks=drinks[dKey]||[];
+  const history=historyMap[dKey]||[];
+
+  let html=`<h4>${isToday?"今天 · 9月19日 周六":`9月${selDay}日 · 周${dw}`}</h4>`;
+  html+=`<div class="sub">${items.length?items.map(i=>i.t).join(" · "):"无周期事项，仅每日打卡"}</div>`;
+  html+=`<div class="strip">${items.map(i=>`<span class="${i.c}">${i.t}</span>`).join("")||'<span>—</span>'}</div>`;
+  if(dayDrinks.length||history.length){
+    html+=`<div class="logged">`;
+    dayDrinks.forEach(d=>html+=`<span class="milk">${d.icon} ${d.name} · ${d.kcal}kcal · ${d.sugar}g</span>`);
+    history.forEach(h=>html+=`<span class="history">${h}</span>`);
+    html+=`</div>`;
+  }
+  // Progress bar for today
+  if(isToday){
+    const pct=getTodayPct();
+    html+=`<div style="font-size:11px;color:var(--ink2);margin-top:10px">今日完成度 <strong style="color:var(--ink)">${pct}%</strong></div><div class="pct-bar"><i style="width:${pct}%"></i></div>`;
+  }
+  html+=`<div class="dh">每日打卡</div>`;
+  dailyNames.forEach(n=>{html+=`<div class="mini"><div class="chk"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 12 10 17 19 8"/></svg></div><div>${n}</div></div>`;});
+  if(selDay===3||selDay===17||selDay===24){html+=`<div class="alert c">📦 <span>洗衣日 · 记得深浅分色洗，床上用品可与衣物分开。</span></div>`;}
+  if(selDay===19||selDay===26){html+=`<div class="alert y">🛏️ <span>床单被套换洗日 · 建议安排在上午，午后晾干通风。</span></div>`;}
+  if(selDay===16||selDay===23||selDay===30){html+=`<div class="alert c">🍳 <span>厨房清洁日 · 油烟机/灶台/水槽，集中处理一次。</span></div>`;}
+  if(selDay===19){html+=`<div class="alert" style="background:var(--purple-soft);color:#7C5FC4">📞 <span>妈妈视频电话日 · 周六晚上是她最舒服的时间。</span></div>`;}
+  if(selDay===20){html+=`<div class="alert" style="background:var(--purple-soft);color:#7C5FC4">📞 <span>爸爸视频电话日 · 记得聊聊他最近在忙什么。</span></div>`;}
+  el.innerHTML=html;
+  document.getElementById("calSelH").textContent=`9月${selDay}日 · 周${dw}`;
+  document.getElementById("calSelSub").textContent=isToday?"今天 · "+(items.length+1)+" 项":"";
+}
+
+// ===== Rules =====
+const rulesData=[
+  {cat:"个人卫生",color:"coral",icon:"🪥",items:[
+    {n:"洗澡 · 护肤 · 刷牙 · 换衣服 · 泡脚",c:"",t:"每天"},
+    {n:"洗头 · 面膜",c:"blue",t:"隔天"},
+  ]},
+  {cat:"居住环境",color:"blue",icon:"🧺",items:[
+    {n:"床上用品换洗",c:"yellow",t:"每 14 天"},
+    {n:"扫地拖地",c:"blue",t:"每周六早"},
+    {n:"厨房清洁（油烟/灶台/水槽）",c:"blue",t:"每周三"},
+    {n:"洗衣服（深浅分）",c:"coral",t:"每周四"},
+    {n:"内裤手洗",c:"green",t:"每天"},
+    {n:"鞋子清洗",c:"blue",t:"每 30 天"},
+    {n:"厨房垃圾",c:"coral",t:"每次做饭"},
+    {n:"生活垃圾",c:"blue",t:"每 2-3 天"},
+    {n:"柜子桌面擦拭",c:"blue",t:"每 7 天"},
+    {n:"马桶清洁",c:"blue",t:"每 7 天"},
+    {n:"梳子清洗",c:"blue",t:"每 7 天"},
+    {n:"化妆品清洗",c:"blue",t:"每 30 天"},
+    {n:"衣橱整理",c:"yellow",t:"每月 1 号"},
+    {n:"冬季大衣 / 羽绒服",c:"blue",t:"换季 1 次"},
+    {n:"大扫除",c:"yellow",t:"每年 1 次"},
+  ]},
+  {cat:"换新",color:"yellow",icon:"🔄",items:[
+    {n:"牙刷",c:"yellow",t:"每月"},
+    {n:"内裤",c:"yellow",t:"每 3 个月"},
+  ]},
+  {cat:"家人陪伴",color:"purple",icon:"💞",items:[
+    {n:"妈妈视频电话",c:"purple",t:"每周六"},
+    {n:"爸爸视频电话",c:"purple",t:"每周日"},
+  ]},
+  {cat:"健康",color:"green",icon:"💚",items:[
+    {n:"鱼油",c:"green",t:"每天"},
+    {n:"23:00 放下手机",c:"green",t:"每天"},
+    {n:"7:00 起床",c:"green",t:"每天"},
+    {n:"吃早饭",c:"green",t:"每天"},
+    {n:"饮水 1.5L",c:"green",t:"每天"},
+    {n:"排便",c:"green",t:"每天"},
+    {n:"奶茶 / 咖啡",c:"coral",t:"每月 1 次"},
+    {n:"运动（待定制）",c:"",t:"每 7 天"},
+    {n:"体检",c:"green",t:"每年 1 次"},
+  ]},
+];
+function renderRules(){
+  const el=document.getElementById("rulesList");el.innerHTML="";
+  rulesData.forEach(r=>{
+    const wrap=document.createElement("div");wrap.className="cat-card";
+    let inner=`<div class="cat-head"><div class="cat-icon ${r.color}">${r.icon}</div><h4>${r.cat}</h4><div class="cnt">${r.items.length} 项</div></div>`;
+    r.items.forEach(it=>{
+      const cls=it.t.includes("待定制")?"rule-row custom":"rule-row";
+      inner+=`<div class="${cls}"><div class="nm">${it.n}</div><div class="chip ${it.c}">${it.t}</div></div>`;
+    });
+    wrap.innerHTML=inner;el.appendChild(wrap);
+  });
+}
+
+// ===== Tab switching =====
+document.querySelectorAll(".tab").forEach(t=>{
+  t.onclick=()=>{
+    const id=t.dataset.screen;
+    document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
+    t.classList.add("active");
+    document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
+    const target=id==="today"?"screen-today":id==="cal"?"screen-cal":id==="rules"?"screen-rules":id==="me"?"screen-me":"screen-today";
+    document.getElementById(target).classList.add("active");
+  };
+});
+document.getElementById("goToday").onclick=()=>{selDay=19;renderCal();renderDayDetail();};
+
+// ===== Confetti / +1 / toast =====
+function burst(x,y,n=12,colors=['#FFC857','#FF8C7A','#6BB6E0','#7BB661','#B79CED']){
+  for(let i=0;i<n;i++){
+    const p=document.createElement("div");p.className="confetti";
+    const tx=(Math.random()-.5)*180,ty=-(40+Math.random()*100),r=Math.random()*720-360;
+    const sz=6+Math.random()*5;
+    p.style.cssText=`left:${x-sz/2}px;top:${y-sz/2}px;background:${colors[i%colors.length]};width:${sz}px;height:${sz}px;border-radius:${Math.random()>.5?'50%':'2px'};--tx:${tx}px;--ty:${ty}px;--r:${r}deg`;
+    document.body.appendChild(p);setTimeout(()=>p.remove(),1300);
+  }
+}
+function rain(n=40){
+  const colors=['#FFC857','#FF8C7A','#6BB6E0','#7BB661','#B79CED','#FFD580'];
+  for(let i=0;i<n;i++){
+    const p=document.createElement("div");p.className="confetti";
+    const x=Math.random()*window.innerWidth;
+    const tx=(Math.random()-.5)*60,ty=window.innerHeight+50;
+    const r=Math.random()*540-270;
+    const sz=6+Math.random()*5;
+    const dur=2+Math.random()*1.5;
+    p.style.cssText=`left:${x}px;top:-20px;background:${colors[i%colors.length]};width:${sz}px;height:${sz}px;border-radius:${Math.random()>.5?'50%':'2px'};--tx:${tx}px;--ty:${ty}px;--r:${r}deg;animation-duration:${dur}s;animation-delay:${Math.random()*.4}s`;
+    document.body.appendChild(p);setTimeout(()=>p.remove(),(dur+0.5)*1000);
+  }
+}
+function plusOne(x,y){
+  const el=document.createElement("div");el.className="plusone";el.textContent="+1";
+  el.style.left=x+"px";el.style.top=y+"px";document.body.appendChild(el);
+  setTimeout(()=>el.remove(),1000);
+}
+function toast(msg){
+  const old=document.querySelector(".toast");if(old)old.remove();
+  const el=document.createElement("div");el.className="toast";el.textContent=msg;
+  document.body.appendChild(el);setTimeout(()=>el.remove(),2400);
+}
+
+// ===== Background customization =====
+const BG_KEY="userBg";
+const BG_OPACITY_KEY="userBgOpacity";
+const BG_PRESET_KEY="userBgPreset";
+const BG_ACCENT_KEY="userBgAccent";
+const GLASS_KEY="userGlass";
+const BG_PRESETS={
+  'sunset':'linear-gradient(135deg,#FFD580 0%,#FF8C7A 100%)',
+  'lavender':'linear-gradient(135deg,#B79CED 0%,#FFC8DD 100%)',
+  'sky':'linear-gradient(135deg,#6BB6E0 0%,#FFFAF0 100%)',
+  'meadow':'linear-gradient(135deg,#7BB661 0%,#FFC857 100%)',
+  'mono':'linear-gradient(135deg,#E5D198 0%,#FFFAF0 100%)',
+};
+// preset 关联的主色调，玻璃模式下会用这个色调作为 --accent
+const BG_PRESET_ACCENT={
+  'sunset':'#FF8C7A',
+  'lavender':'#B79CED',
+  'sky':'#6BB6E0',
+  'meadow':'#7BB661',
+  'mono':'#E5D198',
+};
+const frameEl=document.querySelector('.app-frame');
+const bgLayerEl=document.getElementById('appBgLayer');
+function applyBg(value,opacity){
+  if(!bgLayerEl) return;
+  // gradient 是 CSS 函数本身，不能 wrap url()；其他（data:image/..）要 wrap url()
+  if(!value){bgLayerEl.style.backgroundImage='none';}
+  else if(/^(linear|radial|conic)-gradient/i.test(value)){bgLayerEl.style.backgroundImage=value;}
+  else{bgLayerEl.style.backgroundImage=`url("${value}")`;}
+  bgLayerEl.style.opacity=(opacity||0)/100;
+}
+function applyAccent(color){
+  if(!frameEl || !color) return;
+  // 派生出浅色（向白色靠 85%）和深色（向黑色靠 25%）
+  const [r,g,b]=hexToRgb(color);
+  const softR=Math.round(r+(255-r)*0.85);
+  const softG=Math.round(g+(255-g)*0.85);
+  const softB=Math.round(b+(255-b)*0.85);
+  const deepR=Math.round(r*0.72);
+  const deepG=Math.round(g*0.72);
+  const deepB=Math.round(b*0.72);
+  // 设置在 :root 上，让所有 var(--yellow) / var(--accent) 都跟随
+  document.documentElement.style.setProperty('--accent',color);
+  document.documentElement.style.setProperty('--accent-soft',rgbToHex(softR,softG,softB));
+  document.documentElement.style.setProperty('--accent-deep',rgbToHex(deepR,deepG,deepB));
+  document.documentElement.style.setProperty('--accent-glow',color+'80');
+  // 同步 SVG 圆环前景色（CSS 变量不能直接赋给 SVG attribute）
+  const ringFg=document.getElementById('ringFg');
+  if(ringFg) ringFg.setAttribute('stroke',color);
+  // 更新所有依赖固定黄色阴影的 box-shadow 调色
+  updateShadowColor(r,g,b);
+}
+// 把所有 rgba(255,200,87,..) 阴影换成新主色对应阴影
+function updateShadowColor(r,g,b){
+  // 旧黄 #FFC857 = (255,200,87)
+  const oldR=255,oldG=200,oldB=87;
+  // 一些关键阴影点位 + 默认 box-shadow 变量
+  const a1=0.10,a2=0.16,a3=0.18,a4=0.45,a5=0.50,a6=0.40,a7=0.25;
+  const shadowVar=`0 2px 12px rgba(${r},${g},${b},${a1.toFixed(2)})`;
+  const shadowLgVar=`0 6px 20px rgba(${r},${g},${b},${a2.toFixed(2)})`;
+  document.documentElement.style.setProperty('--shadow',shadowVar);
+  document.documentElement.style.setProperty('--shadow-lg',shadowLgVar);
+  // 顶栏底部、Tab Bar 当前选中项、头像等用到的几个非通用阴影：临时用样式覆盖（用 CSS 变量方法在全局通过 accent-glow 接管）
+}
+function hexToRgb(hex){
+  const m=hex.replace('#','').match(/.{2}/g);
+  if(!m) return [255,200,87];
+  return m.map(x=>parseInt(x,16));
+}
+function rgbToHex(r,g,b){
+  return '#'+[r,g,b].map(x=>Math.round(Math.max(0,Math.min(255,x))).toString(16).padStart(2,'0')).join('');
+}
+// 从图片中提取主色（中心 50% 区域取最显眼的颜色）
+function extractMainColor(dataUrl){
+  return new Promise((resolve)=>{
+    const img=new Image();
+    img.onload=()=>{
+      const c=document.createElement('canvas');
+      const w=c.width=80;const h=c.height=80;
+      const ctx=c.getContext('2d');
+      // 中心 50% 采样
+      ctx.drawImage(img,img.width*0.25,img.height*0.25,img.width*0.5,img.height*0.5,0,0,w,h);
+      const data=ctx.getImageData(0,0,w,h).data;
+      // 简单粗暴：按亮度过滤后取平均值
+      let r=0,g=0,b=0,n=0;
+      for(let i=0;i<data.length;i+=4){
+        const a=data[i+3];
+        if(a<128) continue;
+        const lum=(data[i]*0.3+data[i+1]*0.59+data[i+2]*0.11);
+        // 偏灰的色不要（饱和度太低）
+        const max=Math.max(data[i],data[i+1],data[i+2]);
+        const min=Math.min(data[i],data[i+1],data[i+2]);
+        if((max-min)<25 && lum>120) continue;
+        r+=data[i];g+=data[i+1];b+=data[i+2];n++;
+      }
+      if(n===0) resolve('#FFC857');
+      else resolve(rgbToHex(r/n,g/n,b/n));
+    };
+    img.onerror=()=>resolve('#FFC857');
+    img.src=dataUrl;
+  });
+}
+function applyGlass(on){
+  if(!frameEl) return;
+  frameEl.classList.toggle('glass',!!on);
+  const toggle=document.getElementById('glassToggle');
+  if(toggle) toggle.checked=!!on;
+  const tip=document.getElementById('glassTip');
+  if(tip){tip.classList.add('show');setTimeout(()=>tip.classList.remove('show'),3000);}
+}
+function initBg(){
+  const stored=store.get(BG_KEY,null);
+  const opacity=parseInt(store.get(BG_OPACITY_KEY,18));
+  const preset=store.get(BG_PRESET_KEY,null);
+  const slider=document.getElementById('bgOpacitySlider');
+  const valLabel=document.getElementById('bgOpacityVal');
+  if(slider){slider.value=opacity;if(valLabel)valLabel.textContent=opacity+'%';}
+  const preview=document.getElementById('bgPreview');
+  if(!preview) return;
+  // clear existing
+  preview.classList.remove('has-bg');
+  preview.innerHTML='';
+  preview.style.backgroundImage='';
+  document.querySelectorAll('.bg-preset').forEach(b=>b.classList.remove('active'));
+  if(stored && typeof stored==='string' && stored.length>200){
+    applyBg(stored,opacity);
+    preview.style.backgroundImage=`url("${stored}")`;
+    preview.classList.add('has-bg');
+    // 用上次保存的主色（如有），否则提取
+    const savedAccent=store.get(BG_ACCENT_KEY,null);
+    if(savedAccent) applyAccent(savedAccent);
+    else extractMainColor(stored).then(applyAccent);
+  } else if(preset && BG_PRESETS[preset]){
+    applyBg(BG_PRESETS[preset],opacity);
+    preview.style.backgroundImage=BG_PRESETS[preset];
+    preview.classList.add('has-bg');
+    const p=document.querySelector('.bg-preset[data-bg="'+preset+'"]');
+    if(p)p.classList.add('active');
+    if(BG_PRESET_ACCENT[preset]) applyAccent(BG_PRESET_ACCENT[preset]);
+  } else {
+    applyBg(null,0);
+    applyAccent('#FFC857');
+    preview.innerHTML='<span class="bg-empty-state">未设置 · 使用默认奶油黄渐变</span>';
+  }
+  // 玻璃模式
+  applyGlass(store.get(GLASS_KEY,false)==='1');
+}
+async function fileToBgDataUrl(file,max=600){
+  return new Promise((resolve)=>{
+    const img=new Image();
+    img.onload=()=>{
+      const scale=Math.min(1,max/Math.max(img.width,img.height));
+      const c=document.createElement('canvas');
+      c.width=Math.round(img.width*scale);
+      c.height=Math.round(img.height*scale);
+      c.getContext('2d').drawImage(img,0,0,c.width,c.height);
+      URL.revokeObjectURL(img.src);
+      resolve(c.toDataURL('image/jpeg',0.72));
+    };
+    img.src=URL.createObjectURL(file);
+  });
+}
+const _bgUploadBtn=document.getElementById('bgUploadBtn');
+if(_bgUploadBtn) _bgUploadBtn.onclick=()=>document.getElementById('bgFile').click();
+const _bgFile=document.getElementById('bgFile');
+if(_bgFile) _bgFile.onchange=async(e)=>{
+  const f=e.target.files[0];if(!f)return;
+  e.target.value="";
+  toast("⏳ 正在处理图片...");
+  try{
+    const dataUrl=await fileToBgDataUrl(f,600);
+    store.set(BG_KEY,dataUrl);
+    store.set(BG_PRESET_KEY,'');
+    const opacity=parseInt(document.getElementById('bgOpacitySlider').value);
+    store.set(BG_OPACITY_KEY,opacity);
+    applyBg(dataUrl,opacity);
+    const preview=document.getElementById('bgPreview');
+    preview.style.backgroundImage=`url("${dataUrl}")`;
+    preview.classList.add('has-bg');
+    preview.innerHTML='';
+    document.querySelectorAll('.bg-preset').forEach(b=>b.classList.remove('active'));
+    // 提取主色并应用为 accent
+    extractMainColor(dataUrl).then(hex=>{applyAccent(hex);store.set(BG_ACCENT_KEY,hex);});
+    toast('✅ 背景图片已设置');
+  }catch(err){toast('❌ 图片处理失败');}
+};
+const _opacitySlider=document.getElementById('bgOpacitySlider');
+if(_opacitySlider) _opacitySlider.oninput=(e)=>{
+  const val=parseInt(e.target.value);
+  document.getElementById('bgOpacityVal').textContent=val+'%';
+  store.set(BG_OPACITY_KEY,val);
+  const stored=store.get(BG_KEY,null);
+  const preset=store.get(BG_PRESET_KEY,null);
+  if(stored && stored.length>200) applyBg(stored,val);
+  else if(preset && BG_PRESETS[preset]) applyBg(BG_PRESETS[preset],val);
+};
+document.querySelectorAll('.bg-preset').forEach(b=>{
+  b.onclick=()=>{
+    const id=b.dataset.bg;
+    document.querySelectorAll('.bg-preset').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');
+    store.set(BG_PRESET_KEY,id);
+    store.set(BG_KEY,'');
+    const opacity=parseInt(document.getElementById('bgOpacitySlider').value);
+    applyBg(BG_PRESETS[id],opacity);
+    const preview=document.getElementById('bgPreview');
+    preview.style.backgroundImage=BG_PRESETS[id];
+    preview.classList.add('has-bg');
+    preview.innerHTML='';
+    if(BG_PRESET_ACCENT[id]){applyAccent(BG_PRESET_ACCENT[id]);store.set(BG_ACCENT_KEY,BG_PRESET_ACCENT[id]);}
+    toast('✅ 预设背景已应用');
+  };
+});
+const _bgResetBtn=document.getElementById('bgResetBtn');
+if(_bgResetBtn) _bgResetBtn.onclick=()=>{
+  if(!confirm('确定清除背景，恢复默认外观？'))return;
+  store.set(BG_KEY,'');
+  store.set(BG_PRESET_KEY,'');
+  store.set(BG_ACCENT_KEY,'');
+  applyBg(null,0);
+  applyAccent('#FFC857');
+  const preview=document.getElementById('bgPreview');
+  preview.style.backgroundImage='';
+  preview.classList.remove('has-bg');
+  preview.innerHTML='<span class="bg-empty-state">未设置 · 使用默认奶油黄渐变</span>';
+  document.querySelectorAll('.bg-preset').forEach(b=>b.classList.remove('active'));
+  toast('✅ 已恢复默认');
+};
+
+// 玻璃模式开关
+const _glassToggle=document.getElementById('glassToggle');
+if(_glassToggle) _glassToggle.onchange=(e)=>{
+  const on=e.target.checked;
+  store.set(GLASS_KEY,on?'1':'0');
+  applyGlass(on);
+  toast(on?'🪟 毛玻璃模式已开启':'已关闭毛玻璃');
+};
+const _glassSwitch=document.getElementById('glassSwitch');
+if(_glassSwitch) _glassSwitch.onclick=(e)=>{
+  // 防止点 checkbox 时被吞掉
+  if(e.target.tagName==='INPUT') return;
+  const cb=document.getElementById('glassToggle');
+  cb.checked=!cb.checked;
+  cb.dispatchEvent(new Event('change'));
+};
+
+// ===== Avatar customization =====
+const AVATAR_KEY="userAvatar";
+async function fileToAvatarDataUrl(file, max=240){
+  return new Promise((resolve)=>{
+    const img=new Image();
+    img.onload=()=>{
+      // 中心裁剪成方形
+      const size=Math.min(img.width,img.height);
+      const sx=(img.width-size)/2;
+      const sy=(img.height-size)/2;
+      const scale=Math.min(1,max/size);
+      const c=document.createElement('canvas');
+      c.width=Math.round(size*scale);
+      c.height=Math.round(size*scale);
+      c.getContext('2d').drawImage(img,sx,sy,size,size,0,0,c.width,c.height);
+      URL.revokeObjectURL(img.src);
+      resolve(c.toDataURL('image/jpeg',0.85));
+    };
+    img.src=URL.createObjectURL(file);
+  });
+}
+function applyAvatar(dataUrl){
+  const targets=[document.getElementById('meAvatar'),document.querySelector('.greeting .avatar')];
+  targets.forEach(el=>{
+    if(!el) return;
+    const img=el.querySelector('.avatar-img');
+    if(dataUrl){
+      img.src=dataUrl;
+      el.classList.add('has-img');
+    } else {
+      img.src='';
+      el.classList.remove('has-img');
+    }
+  });
+  const resetBtn=document.getElementById('avatarReset');
+  if(resetBtn) resetBtn.hidden=!dataUrl;
+}
+function initAvatar(){
+  const stored=store.get(AVATAR_KEY,null);
+  if(stored && typeof stored==='string' && stored.length>200) applyAvatar(stored);
+}
+const _meAvatar=document.getElementById('meAvatar');
+if(_meAvatar){
+  _meAvatar.onclick=()=>{
+    const input=document.createElement('input');
+    input.type='file';
+    input.accept='image/*';
+    input.onchange=async(e)=>{
+      const f=e.target.files[0];if(!f)return;
+      try{
+        toast('⏳ 正在处理头像...');
+        const dataUrl=await fileToAvatarDataUrl(f,240);
+        store.set(AVATAR_KEY,dataUrl);
+        applyAvatar(dataUrl);
+        toast('✅ 头像已更新');
+      }catch(err){toast('❌ 头像处理失败');}
+    };
+    input.click();
+  };
+}
+const _avatarReset=document.getElementById('avatarReset');
+if(_avatarReset) _avatarReset.onclick=()=>{
+  if(!confirm('确定恢复默认头像吗？'))return;
+  store.set(AVATAR_KEY,'');
+  applyAvatar(null);
+  toast('✅ 已恢复默认头像');
+};
+
+// ===== Init =====
+const meTaglines=[
+  "把今天过成一首有节奏的小调，先从不忘喝水开始 🎵💧",
+  "好好吃饭、好好喝水、好好过——勾上才是真本事 ✓✨",
+  "今天的小确幸：1.5L 水 + N 个勾 + 一个微笑 ☀️",
+  "管什么节奏呢，先把今天该做的勾完 🍯",
+  "一杯水、一颗糖、一段对话，都被记得 ✿",
+  "日子嘛，慢慢过就好，记得先喝水 🌱",
+];
+const _taglineEl=document.getElementById("meTagline");
+if(_taglineEl) _taglineEl.textContent=meTaglines[Math.floor(Math.random()*meTaglines.length)];
+renderWater();renderPresets();renderDrinks();renderWeek();renderDaily();renderPeriodic();renderCal();renderDayDetail();renderRules();updateProgress();initBg();initAvatar();
+
+// ===== Service Worker 注册（PWA 离线可用）=====
+if("serviceWorker" in navigator){
+  window.addEventListener("load",()=>{
+    navigator.serviceWorker.register("./sw.js").catch(()=>{});
+  });
+}
+// ===== iOS 全屏安全区适配 =====
+(function safeAreaFix(){
+  const isStandalone = window.navigator.standalone === true ||
+    window.matchMedia("(display-mode: standalone)").matches ||
+    window.matchMedia("(display-mode: fullscreen)").matches;
+  if(isStandalone) document.documentElement.classList.add("pwa-standalone");
+})();
+</script>
+</body>
+</html>
