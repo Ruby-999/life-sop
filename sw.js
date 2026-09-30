@@ -1,5 +1,5 @@
 /* 今日节律 · Service Worker —— 离线可用 */
-const CACHE_NAME = 'life-sop-v1';
+const CACHE_NAME = 'life-sop-v3';
 const CORE_ASSETS = [
   './',
   './index.html',

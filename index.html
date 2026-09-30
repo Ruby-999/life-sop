@@ -222,6 +222,13 @@ body{display:flex;justify-content:center;align-items:flex-start;padding:24px 16p
 .day-detail .mini{display:flex;align-items:center;gap:10px;padding:6px 0;font-size:13px}
 .day-detail .mini .chk{width:18px;height:18px;border-radius:50%;background:var(--yellow);display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .day-detail .mini .chk svg{width:10px;height:10px;display:block}
+.day-detail .mini.undone{opacity:.58}
+.day-detail .mini.undone .chk{background:transparent;border:1.5px solid var(--line2)}
+.day-detail .mini.undone .chk svg{opacity:0}
+.day-detail .empty-note{margin-top:8px;padding:16px 14px;border-radius:14px;background:var(--accent-soft);font-size:12.5px;color:var(--ink2);line-height:1.8;text-align:center}
+.cal-cell.future{cursor:default;color:var(--ink3)}
+.cal-cell.future .num{color:var(--ink3);opacity:.42}
+.cal-cell.future:active{background:transparent}
 .day-detail .alert{margin-top:10px;padding:10px 12px;border-radius:12px;font-size:12.5px;display:flex;align-items:center;gap:8px;line-height:1.4}
 .day-detail .alert.y{background:var(--yellow-soft);color:var(--yellow-deep)}
 .day-detail .alert.c{background:var(--coral-soft);color:#D8554A}
@@ -350,6 +357,51 @@ html.pwa-standalone .status-bar{display:none}
 .avatar-reset{background:none;border:none;color:var(--ink3);font-size:11px;padding:4px 0 0;cursor:pointer;text-decoration:underline;font-family:inherit;display:inline-block;letter-spacing:.02em;transition:.15s}
 .avatar-reset:hover{color:var(--coral)}
 .avatar-reset[hidden]{display:none}
+.me-name{cursor:pointer;transition:.18s;display:inline-flex;align-items:center;gap:7px}
+.me-name:hover{color:var(--accent-deep)}
+.me-name::after{content:"";width:13px;height:13px;flex-shrink:0;opacity:.4;background:currentColor;-webkit-mask:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'><path d='M12 20h9'/><path d='M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z'/></svg>") center/contain no-repeat;mask:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'><path d='M12 20h9'/><path d='M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z'/></svg>") center/contain no-repeat;transition:.18s}
+.me-name:hover::after{opacity:.85}
+.name-edit-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9998;display:flex;align-items:center;justify-content:center;animation:fade .2s ease;padding:24px}
+.name-edit-box{background:var(--card);border-radius:22px;padding:22px;width:320px;max-width:100%;box-shadow:0 18px 50px rgba(0,0,0,.22)}
+.name-edit-box h5{margin:0 0 4px;font-size:16px;font-weight:700;color:var(--ink)}
+.name-edit-box p{margin:0 0 14px;font-size:12px;color:var(--ink2);line-height:1.6}
+.name-edit-input{width:100%;padding:12px 14px;border-radius:14px;border:1.5px solid var(--line);background:var(--card);font-family:inherit;font-size:15px;color:var(--ink);outline:none;transition:.18s;box-sizing:border-box}
+.name-edit-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-glow)}
+.name-edit-row{display:flex;gap:9px;margin-top:16px}
+.name-edit-row button{flex:1;padding:11px;border-radius:13px;border:none;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;transition:.16s}
+.name-edit-cancel{background:var(--card);border:1.5px solid var(--line)!important;color:var(--ink2)}
+.name-edit-cancel:hover{background:var(--accent-soft)}
+.name-edit-ok{background:linear-gradient(135deg,var(--accent),var(--accent-deep));color:#fff;box-shadow:0 6px 16px var(--accent-glow)}
+.name-edit-ok:active{transform:scale(.97)}
+/* ＋添加 弹窗 */
+.add-box{max-height:86vh;overflow-y:auto;overscroll-behavior:contain}
+.add-lbl{font-size:12px;font-weight:700;color:var(--ink2);margin:14px 0 8px;letter-spacing:.02em}
+.emoji-row{display:flex;flex-wrap:wrap;gap:7px}
+.emoji-opt{width:38px;height:38px;border-radius:11px;border:1.5px solid var(--line);background:var(--card);font-size:18px;cursor:pointer;transition:.15s;display:flex;align-items:center;justify-content:center;padding:0;font-family:inherit}
+.emoji-opt:active{transform:scale(.92)}
+.emoji-opt.on{border-color:var(--accent);background:var(--accent-soft);transform:scale(1.06)}
+.seg-row{display:flex;gap:8px}
+.seg-btn{flex:1;padding:10px;border-radius:12px;border:1.5px solid var(--line);background:var(--card);font-family:inherit;font-size:13.5px;font-weight:600;color:var(--ink2);cursor:pointer;transition:.15s}
+.seg-btn.on{border-color:var(--accent);background:var(--accent-soft);color:var(--ink)}
+.wd-row{display:flex;gap:6px;margin-top:10px}
+.wd-opt{flex:1;height:38px;border-radius:12px;border:1.5px solid var(--line);background:var(--card);font-size:12.5px;font-weight:600;color:var(--ink2);cursor:pointer;transition:.15s;font-family:inherit;padding:0}
+.wd-opt.on{border-color:var(--accent-deep);background:linear-gradient(135deg,var(--accent),var(--accent-deep));color:#fff;box-shadow:0 4px 10px var(--accent-glow)}
+.rule-del{border:none;background:transparent;font-size:14px;cursor:pointer;opacity:.4;transition:.15s;padding:4px 2px;flex-shrink:0}
+.rule-del:active{transform:scale(.9)}
+.my-custom-card{border:1.5px dashed var(--accent)}
+.cat-head .cnt.warn{background:var(--coral-soft);color:#D8554A}
+/* 早起打卡弹窗 */
+.wake-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9998;display:flex;align-items:center;justify-content:center;animation:fade .22s ease;padding:22px;backdrop-filter:blur(3px)}
+.wake-box{background:var(--card);border-radius:26px;padding:26px 22px 20px;width:330px;max-width:100%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.28);animation:pop .3s cubic-bezier(.34,1.56,.64,1)}
+.wake-emoji{font-size:52px;line-height:1;margin-bottom:10px;display:block}
+.wake-box h4{margin:0 0 6px;font-size:21px;font-weight:800;color:var(--ink);letter-spacing:-.01em}
+.wake-box .wk-sub{margin:0 0 20px;font-size:13px;color:var(--ink2);line-height:1.65}
+.wake-box .wk-time{display:inline-block;margin-top:4px;font-size:12px;color:var(--ink3);font-family:"Inter Tight",monospace}
+.wake-btn{width:100%;padding:14px;border-radius:16px;border:none;font-family:inherit;font-size:15px;font-weight:700;cursor:pointer;transition:.16s;margin-bottom:9px}
+.wake-btn.yes{background:linear-gradient(135deg,var(--accent),var(--accent-deep));color:#fff;box-shadow:0 8px 22px var(--accent-glow)}
+.wake-btn.no{background:var(--accent-soft);color:var(--ink2);margin-bottom:0}
+.wake-btn:active{transform:scale(.97)}
+@keyframes pop{from{opacity:0;transform:scale(.9) translateY(10px)}to{opacity:1;transform:scale(1) translateY(0)}}
 </style>
 </head>
 <body>
@@ -366,10 +418,10 @@ html.pwa-standalone .status-bar{display:none}
     <div class="screen active" id="screen-today">
       <div class="greeting">
         <div class="txt">
-          <h1>早上好 ☀</h1>
-          <div class="date">9月19日 · 周六 · 秋分</div>
+          <h1 id="greetH">早上好 ☀</h1>
+          <div class="date" id="greetDate"></div>
         </div>
-        <div class="avatar"><span class="avatar-letter">彭</span><img class="avatar-img" src="" alt=""></div>
+        <div class="avatar"><span class="avatar-letter" id="greetLetter">m</span><img class="avatar-img" src="" alt=""></div>
       </div>
       <div class="week" id="weekstrip"></div>
       <div class="progress">
@@ -378,13 +430,13 @@ html.pwa-standalone .status-bar{display:none}
             <circle cx="42" cy="42" r="36" fill="none" stroke="#FFF3D9" stroke-width="8"/>
             <circle id="ringFg" cx="42" cy="42" r="36" fill="none" stroke="#FFC857" stroke-width="8" stroke-linecap="round" stroke-dasharray="226" stroke-dashoffset="68"/>
           </svg>
-          <div class="pct" id="ringPct">70%</div>
+          <div class="pct" id="ringPct">0%</div>
         </div>
         <div class="info">
-          <div class="h" id="progH">今日 9 项，已完成 6</div>
-          <div class="sub" id="progSub">继续努力，今天还剩 3 项</div>
-          <div class="bar"><i id="progBar" style="width:70%"></i></div>
-          <div class="streak">🔥 连续打卡 12 天</div>
+          <div class="h" id="progH">今日 0 项，已完成 0</div>
+          <div class="sub" id="progSub">今天还没有打卡记录</div>
+          <div class="bar"><i id="progBar" style="width:0%"></i></div>
+          <div class="streak" id="streakText">🔥 连续打卡 0 天</div>
         </div>
       </div>
       <div class="sec-title"><h3>饮水打卡</h3><span class="more">每杯 500ml</span></div>
@@ -393,7 +445,7 @@ html.pwa-standalone .status-bar{display:none}
           <div class="top">
             <div class="chk"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 12 10 17 19 8"/></svg></div>
             <div class="water-cups" id="waterCups"></div>
-            <div class="water-summary" id="waterSummary"><strong>900</strong>ml</div>
+            <div class="water-summary" id="waterSummary"><strong>0</strong>ml</div>
           </div>
           <div class="water-row">
             <button class="water-btn" id="waterPlus">＋ 500ml</button>
@@ -429,9 +481,9 @@ html.pwa-standalone .status-bar{display:none}
     <div class="screen" id="screen-cal">
       <div class="cal-header">
         <div class="nav">
-          <button aria-label="上一月">‹</button>
-          <h2>九月 2026</h2>
-          <button aria-label="下一月">›</button>
+          <button id="calPrev" aria-label="上一月">‹</button>
+          <h2 id="calMonthH">九月 2026</h2>
+          <button id="calNext" aria-label="下一月">›</button>
         </div>
         <button class="today" id="goToday">今天</button>
       </div>
@@ -455,7 +507,7 @@ html.pwa-standalone .status-bar{display:none}
     <div class="screen" id="screen-rules">
       <div class="rules-header">
         <h2>我的 SOP 规则库</h2>
-        <button class="add-btn">＋ 添加</button>
+        <button class="add-btn" id="rulesAddBtn">＋ 添加</button>
       </div>
       <div id="rulesList"></div>
     </div>
@@ -470,24 +522,24 @@ html.pwa-standalone .status-bar{display:none}
           </div>
         </div>
         <div style="flex:1;min-width:0">
-          <h2>彭彭</h2>
+          <h2 id="meName" class="me-name" title="点击修改用户名">momo</h2>
           <p class="me-tagline" id="meTagline">把今天过成一首有节奏的小调，先从不忘喝水开始 🎵💧</p>
           <button class="avatar-reset" id="avatarReset" hidden>↺ 恢复默认头像</button>
         </div>
       </div>
       <div class="me-stat">
         <div class="stat-item">
-          <div class="stat-num">12</div>
+          <div class="stat-num" id="statStreak">0</div>
           <div class="stat-label">连续打卡</div>
         </div>
         <div class="stat-divider"></div>
         <div class="stat-item">
-          <div class="stat-num">78%</div>
+          <div class="stat-num" id="statMonth">0%</div>
           <div class="stat-label">本月完成率</div>
         </div>
         <div class="stat-divider"></div>
         <div class="stat-item">
-          <div class="stat-num">25</div>
+          <div class="stat-num" id="statDays">0</div>
           <div class="stat-label">记录天数</div>
         </div>
       </div>
@@ -537,7 +589,7 @@ html.pwa-standalone .status-bar{display:none}
             <span class="glass-icon">🪟</span>
             <div>
               <div class="glass-title">毛玻璃模式</div>
-              <div class="glass-subtitle\">类似 iOS · 卡片半透明 + 背景模糊，整套 App 跟着背景图片换气质</div>
+              <div class="glass-subtitle">类似 iOS · 卡片半透明 + 背景模糊，整套 App 跟着背景图片换气质</div>
             </div>
           </div>
           <label class="switch" id="glassSwitch">
@@ -578,8 +630,16 @@ html.pwa-standalone .status-bar{display:none}
   </div>
 </div>
 <script>
-const TODAY=new Date(2026,8,19);
+const NOW=new Date();
+const TODAY=new Date(NOW.getFullYear(),NOW.getMonth(),NOW.getDate());
 const TODAY_KEY=dateKey(TODAY);
+const FIRST_RUN_KEY="installDate";
+// 首次运行的日期：日历里早于这一天的一律没有记录、不可点
+function getInstallDate(){
+  let d=store.get(FIRST_RUN_KEY,null);
+  if(!d){d=TODAY_KEY;store.set(FIRST_RUN_KEY,d);}
+  return d;
+}
 const weekDays=["一","二","三","四","五","六","日"];
 function dateKey(d){return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");}
 function thisMonth(d){return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0");}
@@ -603,79 +663,195 @@ const drinkPresets=[
 ];
 
 // ===== State =====
-let water=store.get("water",900);
+// 数据版本迁移：早期演示版内置了一批"假记录"，升级后统一清空一次，
+// 保证日历里只出现使用者自己真正勾出来的记录。
+(function migrateDemoData(){
+  const V=2;
+  if(store.get("dataVersion",0)<V){
+    ["daily","periodic","water","drinks","perDay","installDate","wakeTime","wakeAsk"].forEach(k=>{
+      try{localStorage.removeItem("sop_"+k)}catch(e){}
+    });
+    store.set("dataVersion",V);
+  }
+})();
+
+let water=store.get("water",0);
 let drinks=store.get("drinks",{}); // {dateKey: [{id, name, icon, kcal, sugar, caffeine, photo, time}]}
 let dailyDone=store.get("daily",{});
 let periodicDone=store.get("periodic",{});
 const dailyItems=[
-  {id:"wake",label:"7:00 早起",meta:"已 07:02",done:true},
-  {id:"breakfast",label:"吃早饭",meta:"✓",done:true},
-  {id:"fish",label:"鱼油",meta:"饭后",done:true},
-  {id:"poop",label:"排便",meta:"今日",done:false},
+  {id:"wake",label:"早起",meta:"待记录",done:false},
+  {id:"breakfast",label:"吃早饭",meta:"",done:false},
+  {id:"fish",label:"鱼油",meta:"饭后",done:false},
+  {id:"poop",label:"排便",meta:"",done:false},
   {id:"brush",label:"刷牙 · 洗澡 · 护肤",meta:"早 + 晚",done:false},
   {id:"footbath",label:"泡脚",meta:"睡前",done:false},
-  {id:"phone",label:"23:00 放下手机",meta:"倒计时 6h",done:false},
+  {id:"phone",label:"23:00 放下手机",meta:"",done:false},
 ];
 dailyItems.forEach(it=>{if(dailyDone[it.id]!==undefined)it.done=dailyDone[it.id];});
 
 const periodicItems=[
-  {id:"sweep", ico:"🧹",name:"扫地拖地",freq:"每周六早上",chip:"blue",chipText:"今日"},
-  {id:"kitchen", ico:"🍳",name:"厨房清洁",freq:"每周三",chip:"blue",chipText:"下周三"},
-  {id:"trash", ico:"🗑️",name:"倒垃圾",freq:"每 2-3 天",chip:"dim",chipText:"明天"},
-  {id:"bedding", ico:"🛏️",name:"床单被套换洗",freq:"每 14 天 · 周末",chip:"yellow",chipText:"下次 10/3"},
-  {id:"mom_call", ico:"📞",name:"妈妈视频电话",freq:"每周六",chip:"purple",chipText:"今天"},
-  {id:"dad_call", ico:"📞",name:"爸爸视频电话",freq:"每周日",chip:"purple",chipText:"明天"},
+  {id:"sweep", ico:"🧹",name:"扫地拖地",freq:"每周六早上",chip:"blue",weekday:5},
+  {id:"kitchen", ico:"🍳",name:"厨房清洁",freq:"每周三",chip:"blue",weekday:2},
+  {id:"trash", ico:"🗑️",name:"倒垃圾",freq:"每 2-3 天",chip:"dim"},
+  {id:"bedding", ico:"🛏️",name:"床单被套换洗",freq:"每 14 天 · 周末",chip:"yellow"},
+  {id:"mom_call", ico:"📞",name:"妈妈视频电话",freq:"每周六",chip:"purple",weekday:5},
+  {id:"dad_call", ico:"📞",name:"爸爸视频电话",freq:"每周日",chip:"purple",weekday:6},
 ];
-periodicItems.forEach(it=>{if(periodicDone[it.id]!==undefined)it.done=periodicDone[it.id];else it.done=false;});
+periodicItems.forEach(it=>{it.done=!!periodicDone[it.id];});
 
-const sopMap={
-  3:[{c:"c",t:"洗衣服"}],
-  10:[{c:"c",t:"洗衣服"}],
-  12:[{c:"b",t:"扫地拖地"}],
-  16:[{c:"b",t:"厨房清洁"}],
-  17:[{c:"c",t:"洗衣服"}],
-  18:[{c:"h",t:"昨日：洗头洗澡"}],
-  19:[{c:"b",t:"扫地拖地"},{c:"y",t:"床单被套"},{c:"p",t:"妈妈电话"}],
-  20:[{c:"p",t:"爸爸电话"}],
-  23:[{c:"b",t:"厨房清洁"}],
-  24:[{c:"c",t:"洗衣服"}],
-  26:[{c:"b",t:"扫地拖地"},{c:"p",t:"妈妈电话"}],
-  27:[{c:"p",t:"爸爸电话"}],
-  30:[{c:"b",t:"厨房清洁"}],
-};
-let selDay=19;
+// ===== 自定义事项（规则库「＋ 添加」创建的）=====
+const CUSTOM_KEY="customItems";   // [{id,kind:"daily"|"weekly",label,icon,weekday?,freq?,meta?}]
+let customItems=store.get(CUSTOM_KEY,[]);
+// 输出前转义，用户自己起的名字也不能裸拼 HTML
+function esc(s){return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");}
+const WD_CN=["一","二","三","四","五","六","日"];
+function hydrateCustom(){
+  customItems.forEach(c=>{
+    if(c.kind==="weekly"){
+      periodicItems.push({id:c.id,ico:c.icon||"⭐",name:c.label,freq:c.freq||("每周"+WD_CN[c.weekday!=null?c.weekday:0]),chip:"yellow",weekday:c.weekday,done:!!periodicDone[c.id]});
+    }else{
+      dailyItems.push({id:c.id,label:c.label,meta:c.meta||"",done:!!dailyDone[c.id]});
+    }
+  });
+}
+hydrateCustom();
+function refreshAll(){renderDaily();renderPeriodic();renderCal();renderDayDetail();renderRules();renderWeek();updateProgress();updateStats();}
+function removeCustom(id){
+  const target=customItems.find(c=>c.id===id);
+  customItems=customItems.filter(c=>c.id!==id);
+  store.set(CUSTOM_KEY,customItems);
+  const di=dailyItems.findIndex(x=>x.id===id);if(di>-1)dailyItems.splice(di,1);
+  const pi=periodicItems.findIndex(x=>x.id===id);if(pi>-1)periodicItems.splice(pi,1);
+  delete dailyDone[id];delete periodicDone[id];
+  store.set("daily",dailyDone);store.set("periodic",periodicDone);
+  // 历史快照里也把这一项抹掉
+  const all=store.get("perDay",{});
+  Object.keys(all).forEach(k=>{
+    if(all[k]&&all[k].dailyDone)delete all[k].dailyDone[id];
+    if(all[k]&&all[k].periodicDone)delete all[k].periodicDone[id];
+  });
+  store.set("perDay",all);
+  refreshAll();
+  toast(`已删除「${target?target.label:""}」，历史统计同步清理`);
+}
+// 添加弹窗：名称 + 图标 + 频率（每天 / 每周几）
+function openAddRule(){
+  if(document.querySelector(".name-edit-overlay"))return;
+  const emojis=["✨","💧","🏃","📖","🧘","💊","🥗","🛁","📞","🧺","🎵","🐾","☕","🦷","🌞","📝"];
+  const ov=document.createElement("div");
+  ov.className="name-edit-overlay";
+  ov.innerHTML=`<div class="name-edit-box add-box">
+    <h5>添加一个自己的事项</h5>
+    <p>保存后会出现在「今日」的打卡列表里，勾选会计入当日完成度和圆环。</p>
+    <input class="name-edit-input" id="addName" maxlength="12" placeholder="比如：拉伸 10 分钟">
+    <div class="add-lbl">选个图标</div>
+    <div class="emoji-row">${emojis.map((e,i)=>`<button class="emoji-opt${i===0?" on":""}" data-e="${e}">${e}</button>`).join("")}</div>
+    <div class="add-lbl">多久一次</div>
+    <div class="seg-row">
+      <button class="seg-btn on" data-k="daily">每天</button>
+      <button class="seg-btn" data-k="weekly">每周</button>
+    </div>
+    <div class="wd-row" id="addWdRow" hidden>${WD_CN.map((w,i)=>`<button class="wd-opt" data-w="${i}">${w}</button>`).join("")}</div>
+    <div class="name-edit-row">
+      <button class="name-edit-cancel" id="addCancel">取消</button>
+      <button class="name-edit-ok" id="addOk">加进去</button>
+    </div>
+  </div>`;
+  document.body.appendChild(ov);
+  let icon=emojis[0],kind="daily",weekday=(TODAY.getDay()+6)%7;
+  // 预选今天的星期
+  ov.querySelectorAll(".wd-opt").forEach(b=>{
+    if(+b.dataset.w===weekday)b.classList.add("on");
+    b.onclick=()=>{ov.querySelectorAll(".wd-opt").forEach(x=>x.classList.remove("on"));b.classList.add("on");weekday=+b.dataset.w;};
+  });
+  ov.querySelectorAll(".emoji-opt").forEach(b=>b.onclick=()=>{
+    ov.querySelectorAll(".emoji-opt").forEach(x=>x.classList.remove("on"));b.classList.add("on");icon=b.dataset.e;
+  });
+  ov.querySelectorAll(".seg-btn").forEach(b=>b.onclick=()=>{
+    ov.querySelectorAll(".seg-btn").forEach(x=>x.classList.remove("on"));b.classList.add("on");
+    kind=b.dataset.k;
+    ov.querySelector("#addWdRow").hidden=(kind!=="weekly");
+  });
+  const close=()=>ov.remove();
+  ov.querySelector("#addCancel").onclick=close;
+  ov.onclick=(e)=>{if(e.target===ov)close();};
+  ov.querySelector("#addOk").onclick=()=>{
+    const name=(ov.querySelector("#addName").value||"").trim();
+    if(!name){toast("先给它起个名字呀 ✍️");ov.querySelector("#addName").focus();return;}
+    const c={id:"c"+Date.now(),kind,label:name,icon};
+    if(kind==="weekly"){
+      c.weekday=weekday;c.freq="每周"+WD_CN[weekday];
+      periodicItems.push({id:c.id,ico:icon,name,freq:c.freq,chip:"yellow",weekday,done:false});
+    }else{
+      c.meta="";
+      dailyItems.push({id:c.id,label:name,meta:"",done:false});
+    }
+    customItems.push(c);store.set(CUSTOM_KEY,customItems);
+    close();refreshAll();
+    burst(window.innerWidth/2,window.innerHeight*0.4,14,['#FFC857','#FF8C7A','#7BB661','#B79CED']);
+    toast(`✓ 已添加「${name}」，去今日页打卡吧`);
+    switchScreen("today");
+  };
+  setTimeout(()=>{const i=ov.querySelector("#addName");i.focus();},60);
+}
+const _addBtn=document.getElementById("rulesAddBtn");
+if(_addBtn)_addBtn.onclick=openAddRule;
+
+// ===== 早起打卡 =====
+const WAKE_KEY="wakeTime";     // {dateKey:"07:02"} —— 真实起床时刻
+const WAKE_ASK_KEY="wakeAsk";  // {dateKey:{count,last}} 用来节流，不反复打扰
+let wakeTimes=store.get(WAKE_KEY,{});
+let wakeAsk=store.get(WAKE_ASK_KEY,{});
+const WAKE_FROM=4.5;             // 04:30 之后才开始问
+const WAKE_TO=11.5;              // 11:30 之后不再问
+const WAKE_COOLDOWN=20*60*1000;  // 回答"还没起"后 20 分钟内不打扰
+const WAKE_MAX_ASK=3;            // 一天最多问 3 次
+
+// 日历：当前浏览的月份 + 选中日期（不再写死某一天）
+let calYear=TODAY.getFullYear();
+let calMonth=TODAY.getMonth();
+let selKey=TODAY_KEY;
 
 // ===== Per-day completion helper =====
 function getDayTotal(){
   return dailyItems.length + 1 + periodicItems.length;
 }
-function getDayDone(dateKey){
-  // For 9/19 (today) use live state; for other dates with stored data use stored snapshot
-  if(dateKey===TODAY_KEY){
-    const waterDone=water>=1500?1:0;
-    const dailyCnt=dailyItems.filter(x=>x.done).length;
-    const perCnt=periodicItems.filter(x=>x.done).length;
-    return {total:getDayTotal(), done:waterDone+dailyCnt+perCnt};
+// 今天取实时状态；过去的某天取当天留下的快照（没有就是 null）
+function getSnapshot(k){
+  if(k===TODAY_KEY){
+    const dd={};dailyItems.forEach(x=>dd[x.id]=x.done);
+    const pp={};periodicItems.forEach(x=>pp[x.id]=x.done);
+    return {dailyDone:dd,periodicDone:pp,water,wakeTime:wakeTimes[TODAY_KEY]||""};
   }
-  // Past days: try to compute from sopMap + history
-  const dayNum=parseInt(dateKey.split("-")[2],10);
-  let total=0,done=0;
-  const scheduled=sopMap[dayNum]||[];
-  total+=scheduled.length;
-  done+=scheduled.length; // assume past scheduled items were completed
-  // history events count as done
-  const hist=historyMap[dateKey]||[];
-  done+=hist.length;
-  total+=hist.length;
-  // drinks as done
-  const drs=drinks[dateKey]||[];
-  done+=drs.length;
-  return {total:Math.max(total,1), done};
+  return store.get("perDay",{})[k]||null;
 }
-const historyMap={"2026-09-18":["洗头","洗澡"]};
+function countDone(snap){
+  if(!snap)return 0;
+  const d=Object.values(snap.dailyDone||{}).filter(Boolean).length;
+  const p=Object.values(snap.periodicDone||{}).filter(Boolean).length;
+  const w=(snap.water||0)>=1500?1:0;
+  return d+p+w;
+}
+function getDayDone(k){
+  const snap=getSnapshot(k);
+  return {total:getDayTotal(), done:countDone(snap), snap};
+}
+// 某天是否有真实记录 —— 决定日历上画不画东西
+function hasRecord(k){
+  if(k>TODAY_KEY) return false;
+  if(k<getInstallDate()) return false;
+  if((drinks[k]||[]).length) return true;
+  return countDone(getSnapshot(k))>0;
+}
+// 某天完成度（0-100）；没记录返回 null（日历就不画圆环）
+function getDayPct(k){
+  if(!hasRecord(k)) return null;
+  return Math.round(countDone(getSnapshot(k))/getDayTotal()*100);
+}
 
 function saveTodayState(){
-  const s={dailyDone:{},periodicDone:{},water};
+  const s={dailyDone:{},periodicDone:{},water,wakeTime:wakeTimes[TODAY_KEY]||""};
   dailyItems.forEach(x=>s.dailyDone[x.id]=x.done);
   periodicItems.forEach(x=>s.periodicDone[x.id]=x.done);
   // Save per-day state under TODAY_KEY (snapshot for ring)
@@ -863,15 +1039,15 @@ function renderWeek(){
   const day=(start.getDay()+6)%7;
   start.setDate(start.getDate()-day);
   const el=document.getElementById("weekstrip");el.innerHTML="";
-  const dotsDays=[3,10,12,16,17,18,19,20,23,24,26,27,30];
   for(let i=0;i<7;i++){
     const d=new Date(start);d.setDate(start.getDate()+i);
     const isToday=d.getTime()===TODAY.getTime();
     const dk=dateKey(d);
-    const has=dotsDays.includes(d.getDate())||(drinks[dk]&&drinks[dk].length);
+    const has=hasRecord(dk);
     const div=document.createElement("div");
     div.className="day"+(isToday?" today":"");
     div.innerHTML=`<div class="dw">周${weekDays[i]}</div><div class="num">${d.getDate()}</div><div class="dot" style="visibility:${has?'visible':'hidden'}"></div>`;
+    div.onclick=()=>{calYear=d.getFullYear();calMonth=d.getMonth();selKey=dk;renderCal();renderDayDetail();switchScreen("cal");};
     el.appendChild(div);
   }
 }
@@ -879,16 +1055,33 @@ function renderWeek(){
 // ===== Daily list =====
 function renderDaily(){
   const el=document.getElementById("dailyList");el.innerHTML="";
+  const wakeT=wakeTimes[TODAY_KEY];
   dailyItems.forEach(it=>{
     const d=document.createElement("div");d.className="item"+(it.done?" done":"");
+    let meta=it.meta;
+    if(it.id==="wake") meta = (it.done&&wakeT) ? ("已 "+wakeT) : "亮屏时问你 · 也可点这里";
     d.innerHTML=`<div class="chk"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 12 10 17 19 8"/></svg></div>
-      <div class="label">${it.label}</div>
-      <div class="meta">${it.meta}</div>`;
+      <div class="label">${esc(it.label)}</div>
+      <div class="meta">${meta}</div>`;
     d.onclick=(e)=>{
+      // 早起这一项特殊：勾上时顺手记下此刻的时间，取消勾选则清掉
+      if(it.id==="wake"){
+        if(!it.done){ markWake(new Date()); }
+        else { delete wakeTimes[TODAY_KEY]; store.set(WAKE_KEY,wakeTimes); }
+        it.done=!it.done;dailyDone.wake=it.done;store.set("daily",dailyDone);
+        renderDaily();updateProgress(it.done);saveTodayState();renderCal();renderDayDetail();
+        if(it.done){
+          const r=e.currentTarget.getBoundingClientRect();
+          burst(r.left+22,r.top+r.height/2,12,['#FFC857','#FF8C7A','#6BB6E0','#7BB661','#B79CED']);
+          plusOne(r.left+r.width/2,r.top-4);
+        }
+        checkFullDay();
+        return;
+      }
       it.done=!it.done;dailyDone[it.id]=it.done;store.set("daily",dailyDone);
       renderDaily();
       const wasAll=it.done?isAllDone(true):isAllDone(false);
-      updateProgress(it.done);saveTodayState();renderCal();
+      updateProgress(it.done);saveTodayState();renderCal();renderDayDetail();
       if(it.done){
         const r=e.currentTarget.getBoundingClientRect();
         burst(r.left+22,r.top+r.height/2,12,['#FFC857','#FF8C7A','#6BB6E0','#7BB661','#B79CED']);
@@ -926,6 +1119,16 @@ function updateProgress(markDone){
 }
 
 // ===== Periodic =====
+// 按"今天星期几"算出这件周期事项的临期文案，不再写死
+function nextDueText(p){
+  if(p.weekday===undefined) return "随时可做";
+  const todayIdx=(TODAY.getDay()+6)%7; // 周一 = 0
+  let diff=p.weekday-todayIdx;
+  if(diff<0) diff+=7;
+  if(diff===0) return "今天";
+  if(diff===1) return "明天";
+  return diff+" 天后";
+}
 function renderPeriodic(){
   const el=document.getElementById("periodicList");el.innerHTML="";
   periodicItems.forEach(p=>{
@@ -933,12 +1136,12 @@ function renderPeriodic(){
     d.className="item"+(p.done?" done":"");
     d.innerHTML=`<div class="chk"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 12 10 17 19 8"/></svg></div>
       <div class="ico">${p.ico}</div>
-      <div class="name">${p.name}<div class="f">${p.freq}</div></div>
-      <div class="chip ${p.chip}">${p.done?'✓ 已完成':p.chipText}</div>`;
+      <div class="name">${esc(p.name)}<div class="f">${esc(p.freq)}</div></div>
+      <div class="chip ${p.chip}">${p.done?'✓ 已完成':nextDueText(p)}</div>`;
     d.onclick=(e)=>{
       p.done=!p.done;periodicDone[p.id]=p.done;store.set("periodic",periodicDone);
       renderPeriodic();
-      updateProgress(p.done);saveTodayState();renderCal();
+      updateProgress(p.done);saveTodayState();renderCal();renderDayDetail();
       if(p.done){
         const r=e.currentTarget.getBoundingClientRect();
         burst(r.left+22,r.top+r.height/2,10,['#FFC857','#7BB661','#B79CED']);
@@ -951,94 +1154,122 @@ function renderPeriodic(){
 }
 
 // ===== Calendar (with progress rings) =====
+const MONTH_CN=["一月","二月","三月","四月","五月","六月","七月","八月","九月","十月","十一月","十二月"];
 function renderCal(){
   const grid=document.getElementById("calGrid");grid.innerHTML="";
-  const firstDay=new Date(2026,8,1);
+  const mh=document.getElementById("calMonthH");
+  if(mh) mh.textContent=`${MONTH_CN[calMonth]} ${calYear}`;
+
+  const firstDay=new Date(calYear,calMonth,1);
   const offset=(firstDay.getDay()+6)%7;
-  const prevDays=new Date(2026,8,0).getDate();
+  const prevDays=new Date(calYear,calMonth,0).getDate();
+  const daysInMonth=new Date(calYear,calMonth+1,0).getDate();
+  const install=getInstallDate();
+
   for(let i=offset-1;i>=0;i--){
     const c=document.createElement("div");c.className="cal-cell dim";c.textContent=prevDays-i;
     grid.appendChild(c);
   }
-  for(let d=1;d<=30;d++){
+  for(let d=1;d<=daysInMonth;d++){
+    const dk=`${calYear}-${String(calMonth+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
     const c=document.createElement("div");c.className="cal-cell";
-    if(d===19)c.classList.add("today");
-    if(d===selDay)c.classList.add("selected");
-    const evs=[...(sopMap[d]||[])];
-    const dKey=`2026-09-${String(d).padStart(2,"0")}`;
-    if((drinks[dKey]||[]).length)evs.push({c:"g",t:"饮料"});
-    // progress ring for days with data
-    const pct=d===19?getTodayPct():getPastDayPct(dKey);
+    if(dk===TODAY_KEY)c.classList.add("today");
+    if(dk===selKey)c.classList.add("selected");
+    const beforeStart=dk<install;
+    const isFuture=dk>TODAY_KEY;
+    if(beforeStart){c.classList.add("dim");c.title="开始使用之前 · 没有记录";}
+    else if(isFuture){c.classList.add("future");}
+
+    // 只有真正留下过记录的日子才画圆环
     let ringHtml="";
+    const pct=getDayPct(dk);
     if(pct!==null){
       const C=2*Math.PI*15;
       const off=C*(1-pct/100);
       ringHtml=`<svg class="day-ring" viewBox="0 0 34 34"><circle cx="17" cy="17" r="15" fill="none" stroke="#FFF3D9" stroke-width="2.5"/><circle cx="17" cy="17" r="15" fill="none" stroke="#FFC857" stroke-width="2.5" stroke-dasharray="${C.toFixed(2)}" stroke-dashoffset="${off.toFixed(2)}" stroke-linecap="round" transform="rotate(-90 17 17)"/></svg>`;
     }
-    const dotsHtml=evs.slice(0,4).map(e=>`<i class="dot-${e.c}"></i>`).join("");
+    const evs=[];
+    if((drinks[dk]||[]).length)evs.push("g");
+    const dotsHtml=evs.slice(0,4).map(cls=>`<i class="dot-${cls}"></i>`).join("");
     c.innerHTML=`<div class="day-wrap">${ringHtml}<div class="num">${d}</div></div><div class="dots">${dotsHtml}</div>`;
-    c.onclick=()=>{selDay=d;renderCal();renderDayDetail();};
+    if(!beforeStart){c.onclick=()=>{selKey=dk;renderCal();renderDayDetail();};}
     grid.appendChild(c);
   }
-  const total=offset+30;
+  const total=offset+daysInMonth;
   const fill=Math.ceil(total/7)*7-total;
   for(let i=1;i<=fill;i++){
     const c=document.createElement("div");c.className="cal-cell dim";c.textContent=i;
     grid.appendChild(c);
   }
 }
-function getTodayPct(){
-  const total=getDayTotal();
-  const done=dailyItems.filter(x=>x.done).length+(water>=1500?1:0)+periodicItems.filter(x=>x.done).length;
-  return Math.round(done/total*100);
-}
-function getPastDayPct(dateKey){
-  // For past dates we estimate based on recorded events
-  const dayNum=parseInt(dateKey.split("-")[2],10);
-  const scheduled=sopMap[dayNum]||[];
-  const hist=historyMap[dateKey]||[];
-  const drs=drinks[dateKey]||[];
-  if(!scheduled.length && !hist.length && !drs.length) return null;
-  const total=Math.max(scheduled.length+hist.length+drs.length,1);
-  const done=total; // assume all completed (past day)
-  return Math.round(done/Math.max(total,1)*100);
-}
 
 function renderDayDetail(){
   const el=document.getElementById("dayDetail");
-  const dt=new Date(2026,8,selDay);
+  const parts=selKey.split("-").map(Number);
+  const yy=parts[0],mm=parts[1],dd=parts[2];
+  const dt=new Date(yy,mm-1,dd);
   const dw=weekDays[(dt.getDay()+6)%7];
-  const isToday=selDay===19;
-  const items=sopMap[selDay]||[];
-  const dailyNames=["7:00 早起","吃早饭","鱼油","饮水 1.5L","排便","泡脚","23:00 放下手机"];
-  const dKey=`2026-09-${String(selDay).padStart(2,"0")}`;
-  const dayDrinks=drinks[dKey]||[];
-  const history=historyMap[dKey]||[];
+  const isToday=selKey===TODAY_KEY;
+  const install=getInstallDate();
+  const yKey=dateKey(new Date(TODAY.getFullYear(),TODAY.getMonth(),TODAY.getDate()-1));
+  const h4=document.getElementById("calSelH");
+  const subEl=document.getElementById("calSelSub");
+  if(h4)h4.textContent=`${mm}月${dd}日 · 周${dw}`;
+  if(subEl)subEl.textContent=isToday?"今天":(selKey===yKey?"昨天":"");
+  const head=`<h4>${isToday?"今天 · ":""}${mm}月${dd}日 · 周${dw}</h4>`;
 
-  let html=`<h4>${isToday?"今天 · 9月19日 周六":`9月${selDay}日 · 周${dw}`}</h4>`;
-  html+=`<div class="sub">${items.length?items.map(i=>i.t).join(" · "):"无周期事项，仅每日打卡"}</div>`;
-  html+=`<div class="strip">${items.map(i=>`<span class="${i.c}">${i.t}</span>`).join("")||'<span>—</span>'}</div>`;
-  if(dayDrinks.length||history.length){
-    html+=`<div class="logged">`;
+  // 开始使用之前的日子：彻底没有数据源
+  if(selKey<install){
+    el.innerHTML=head+`<div class="sub">开始使用之前</div>
+      <div class="empty-note">📭 记录从 ${install.replace(/-/g,"/")} 开始。<br>之前的日子不会凭空长出数据来。</div>`;
+    return;
+  }
+  if(selKey>TODAY_KEY){
+    el.innerHTML=head+`<div class="sub">还没到这一天</div>
+      <div class="empty-note">🗓️ 这一天还空着，等你去填。</div>`;
+    return;
+  }
+
+  const snap=getSnapshot(selKey);
+  const done=countDone(snap);
+  const total=getDayTotal();
+  const pct=Math.round(done/total*100);
+  const dayDrinks=drinks[selKey]||[];
+  const dayWater=(snap&&snap.water)||0;
+  const ddone=(snap&&snap.dailyDone)||{};
+  const pdone=(snap&&snap.periodicDone)||{};
+  const wakeT=(snap&&snap.wakeTime)||wakeTimes[selKey]||"";
+
+  if(done===0 && !dayDrinks.length){
+    el.innerHTML=head+`<div class="sub">这天没有留下任何记录</div>
+      <div class="empty-note">🌱 空白也是一种答案，明天见。</div>`;
+    return;
+  }
+
+  let html=head+`<div class="sub">完成 ${done} / ${total} 项 · 完成度 ${pct}%</div><div class="pct-bar"><i style="width:${pct}%"></i></div>`;
+
+  html+=`<div class="dh">每日打卡</div>`;
+  dailyItems.forEach(it=>{
+    const ok=!!ddone[it.id];
+    let label=it.label;
+    if(it.id==="wake"&&wakeT) label=`早起 · ${wakeT}`;
+    html+=`<div class="mini${ok?"":" undone"}"><div class="chk"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 12 10 17 19 8"/></svg></div><div>${esc(label)}</div></div>`;
+  });
+
+  html+=`<div class="dh">饮水</div><div class="mini${dayWater>=1500?"":" undone"}"><div class="chk"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 12 10 17 19 8"/></svg></div><div>${dayWater}ml${dayWater>=1500?" · 达标 ✓":""}</div></div>`;
+
+  const perList=periodicItems.filter(p=>pdone[p.id]);
+  if(perList.length){
+    html+=`<div class="dh">当天完成的周期事项</div>`;
+    perList.forEach(p=>{html+=`<div class="mini"><div class="chk"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 12 10 17 19 8"/></svg></div><div>${p.ico} ${esc(p.name)}</div></div>`;});
+  }
+
+  if(dayDrinks.length){
+    html+=`<div class="dh">饮料记录</div><div class="logged">`;
     dayDrinks.forEach(d=>html+=`<span class="milk">${d.icon} ${d.name} · ${d.kcal}kcal · ${d.sugar}g</span>`);
-    history.forEach(h=>html+=`<span class="history">${h}</span>`);
     html+=`</div>`;
   }
-  // Progress bar for today
-  if(isToday){
-    const pct=getTodayPct();
-    html+=`<div style="font-size:11px;color:var(--ink2);margin-top:10px">今日完成度 <strong style="color:var(--ink)">${pct}%</strong></div><div class="pct-bar"><i style="width:${pct}%"></i></div>`;
-  }
-  html+=`<div class="dh">每日打卡</div>`;
-  dailyNames.forEach(n=>{html+=`<div class="mini"><div class="chk"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 12 10 17 19 8"/></svg></div><div>${n}</div></div>`;});
-  if(selDay===3||selDay===17||selDay===24){html+=`<div class="alert c">📦 <span>洗衣日 · 记得深浅分色洗，床上用品可与衣物分开。</span></div>`;}
-  if(selDay===19||selDay===26){html+=`<div class="alert y">🛏️ <span>床单被套换洗日 · 建议安排在上午，午后晾干通风。</span></div>`;}
-  if(selDay===16||selDay===23||selDay===30){html+=`<div class="alert c">🍳 <span>厨房清洁日 · 油烟机/灶台/水槽，集中处理一次。</span></div>`;}
-  if(selDay===19){html+=`<div class="alert" style="background:var(--purple-soft);color:#7C5FC4">📞 <span>妈妈视频电话日 · 周六晚上是她最舒服的时间。</span></div>`;}
-  if(selDay===20){html+=`<div class="alert" style="background:var(--purple-soft);color:#7C5FC4">📞 <span>爸爸视频电话日 · 记得聊聊他最近在忙什么。</span></div>`;}
   el.innerHTML=html;
-  document.getElementById("calSelH").textContent=`9月${selDay}日 · 周${dw}`;
-  document.getElementById("calSelSub").textContent=isToday?"今天 · "+(items.length+1)+" 项":"";
 }
 
 // ===== Rules =====
@@ -1086,6 +1317,17 @@ const rulesData=[
 ];
 function renderRules(){
   const el=document.getElementById("rulesList");el.innerHTML="";
+  // 我添加的自定义事项（可删除）
+  if(customItems.length){
+    const wrap=document.createElement("div");wrap.className="cat-card my-custom-card";
+    let inner=`<div class="cat-head"><div class="cat-icon yellow">⭐</div><h4>我添加的</h4><div class="cnt">${customItems.length} 项</div></div>`;
+    customItems.forEach(c=>{
+      const freq=c.kind==="weekly"?(c.freq||"每周一次"):"每天";
+      inner+=`<div class="rule-row"><div class="nm">${c.icon||"✨"} ${esc(c.label)}</div><div class="chip ${c.kind==="weekly"?"blue":"green"}">${freq}</div><button class="rule-del" data-id="${c.id}" title="删除这一项">🗑</button></div>`;
+    });
+    wrap.innerHTML=inner;el.appendChild(wrap);
+    wrap.querySelectorAll(".rule-del").forEach(b=>b.onclick=(e)=>{e.stopPropagation();removeCustom(b.dataset.id);});
+  }
   rulesData.forEach(r=>{
     const wrap=document.createElement("div");wrap.className="cat-card";
     let inner=`<div class="cat-head"><div class="cat-icon ${r.color}">${r.icon}</div><h4>${r.cat}</h4><div class="cnt">${r.items.length} 项</div></div>`;
@@ -1098,17 +1340,25 @@ function renderRules(){
 }
 
 // ===== Tab switching =====
-document.querySelectorAll(".tab").forEach(t=>{
-  t.onclick=()=>{
-    const id=t.dataset.screen;
-    document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
-    t.classList.add("active");
-    document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
-    const target=id==="today"?"screen-today":id==="cal"?"screen-cal":id==="rules"?"screen-rules":id==="me"?"screen-me":"screen-today";
-    document.getElementById(target).classList.add("active");
-  };
-});
-document.getElementById("goToday").onclick=()=>{selDay=19;renderCal();renderDayDetail();};
+function switchScreen(id){
+  document.querySelectorAll(".tab").forEach(x=>x.classList.toggle("active",x.dataset.screen===id));
+  document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
+  const target=id==="today"?"screen-today":id==="cal"?"screen-cal":id==="rules"?"screen-rules":id==="me"?"screen-me":"screen-today";
+  document.getElementById(target).classList.add("active");
+}
+document.querySelectorAll(".tab").forEach(t=>{t.onclick=()=>switchScreen(t.dataset.screen);});
+document.getElementById("goToday").onclick=()=>{
+  calYear=TODAY.getFullYear();calMonth=TODAY.getMonth();selKey=TODAY_KEY;
+  renderCal();renderDayDetail();
+};
+document.getElementById("calPrev").onclick=()=>{
+  calMonth--;if(calMonth<0){calMonth=11;calYear--;}
+  renderCal();
+};
+document.getElementById("calNext").onclick=()=>{
+  calMonth++;if(calMonth>11){calMonth=0;calYear++;}
+  renderCal();
+};
 
 // ===== Confetti / +1 / toast =====
 function burst(x,y,n=12,colors=['#FFC857','#FF8C7A','#6BB6E0','#7BB661','#B79CED']){
@@ -1458,6 +1708,154 @@ if(_avatarReset) _avatarReset.onclick=()=>{
   toast('✅ 已恢复默认头像');
 };
 
+// ===== 早起打卡：屏幕点亮 / 回到前台时问一句 =====
+function markWake(t,announce){
+  const hh=String(t.getHours()).padStart(2,"0")+":"+String(t.getMinutes()).padStart(2,"0");
+  wakeTimes[TODAY_KEY]=hh;
+  store.set(WAKE_KEY,wakeTimes);
+  dailyDone.wake=true;
+  store.set("daily",dailyDone);
+  const it=dailyItems.find(x=>x.id==="wake");
+  if(it)it.done=true;
+  renderDaily();updateProgress(true);saveTodayState();renderCal();renderDayDetail();updateStats();
+  if(announce!==false){
+    burst(window.innerWidth/2,window.innerHeight*0.34,30,['#FFC857','#FF8C7A','#FFD580']);
+    toast(`☀️ ${hh} 起床 · 今天第一件事完成`);
+  }
+}
+function wakeAskCount(){return (wakeAsk[TODAY_KEY]&&wakeAsk[TODAY_KEY].count)||0;}
+function wakeLastAsk(){return (wakeAsk[TODAY_KEY]&&wakeAsk[TODAY_KEY].last)||0;}
+const WAKE_IDLE_KEY="wakeIdleAt"; // 上次离开 App 的时间，用来判断"是不是重新亮屏"
+function askWakeUp(){
+  if(document.querySelector(".wake-overlay"))return;
+  const now=new Date();
+  const hh=String(now.getHours()).padStart(2,"0")+":"+String(now.getMinutes()).padStart(2,"0");
+  const ov=document.createElement("div");
+  ov.className="wake-overlay";
+  ov.innerHTML=`
+    <div class="wake-box">
+      <span class="wake-emoji">🌤️</span>
+      <h4>起床了吗？</h4>
+      <p class="wk-sub">选「起了」，我就把现在记成你今天的起床时间。</p>
+      <button class="wake-btn yes" id="wkYes">起了 ☀️ · ${hh}</button>
+      <button class="wake-btn no" id="wkNo">再睡会儿 😴</button>
+      <div class="wk-time">只在 04:30 – 11:30 之间问</div>
+    </div>`;
+  document.body.appendChild(ov);
+  ov.querySelector("#wkYes").onclick=()=>{ov.remove();markWake(new Date());};
+  ov.querySelector("#wkNo").onclick=()=>{
+    ov.remove();
+    const rec=wakeAsk[TODAY_KEY]||{count:0,last:0};
+    wakeAsk[TODAY_KEY]={count:rec.count+1,last:Date.now()};
+    store.set(WAKE_ASK_KEY,wakeAsk);
+    const left=WAKE_MAX_ASK-wakeAskCount();
+    toast(left>0?`😴 好，过会儿再问你（今天还能问 ${left} 次）`:"😴 好，今天就到这，明天再说");
+  };
+}
+function maybeAskWake(){
+  const now=new Date();
+  const h=now.getHours()+now.getMinutes()/60;
+  if(h<WAKE_FROM||h>WAKE_TO)return;                  // 不是早晨时段
+  if(wakeTimes[TODAY_KEY])return;                    // 今天已经记过了
+  if(wakeAskCount()>=WAKE_MAX_ASK)return;            // 今天问够了
+  if(Date.now()-wakeLastAsk()<WAKE_COOLDOWN)return;  // 刚问过，别烦人
+  const idle=store.get(WAKE_IDLE_KEY,0);
+  if(idle && Date.now()-idle<60*1000)return;         // 只是切了下窗口，不算重新亮屏
+  wakeAsk[TODAY_KEY]={count:wakeAskCount()+1,last:Date.now()};
+  store.set(WAKE_ASK_KEY,wakeAsk);
+  askWakeUp();
+}
+document.addEventListener("visibilitychange",()=>{
+  if(document.hidden){store.set(WAKE_IDLE_KEY,Date.now());}
+  else setTimeout(maybeAskWake,400);
+});
+window.addEventListener("resume",()=>setTimeout(maybeAskWake,400));
+window.addEventListener("pageshow",()=>setTimeout(maybeAskWake,600));
+
+// ===== 用户名（默认 momo，可自己改）=====
+const NAME_KEY="userName";
+let userName=store.get(NAME_KEY,"momo");
+function applyName(){
+  const el=document.getElementById("meName");
+  if(el)el.textContent=userName;
+  const letter=(String(userName||"m").trim().charAt(0)||"M").toUpperCase();
+  document.querySelectorAll(".avatar-letter").forEach(a=>a.textContent=letter);
+  document.title=`今日节律 · ${userName} 的生活 SOP`;
+}
+function editName(){
+  if(document.querySelector(".name-edit-overlay"))return;
+  const ov=document.createElement("div");
+  ov.className="name-edit-overlay";
+  ov.innerHTML=`
+    <div class="name-edit-box">
+      <h5>改个名字吧</h5>
+      <p>这个 App 也可能会给别人用，写你自己的名字就好。默认叫 momo。</p>
+      <input class="name-edit-input" id="nameInput" maxlength="12" value="${String(userName).replace(/&/g,"&amp;").replace(/"/g,"&quot;")}" placeholder="比如：momo">
+      <div class="name-edit-row">
+        <button class="name-edit-cancel" id="nameCancel">取消</button>
+        <button class="name-edit-ok" id="nameOk">保存</button>
+      </div>
+    </div>`;
+  document.body.appendChild(ov);
+  const input=ov.querySelector("#nameInput");
+  setTimeout(()=>{input.focus();input.select();},60);
+  const close=()=>ov.remove();
+  const save=()=>{
+    userName=(String(input.value||"").trim()||"momo").slice(0,12);
+    store.set(NAME_KEY,userName);
+    applyName();close();toast(`👋 你好，${userName}`);
+  };
+  ov.querySelector("#nameCancel").onclick=close;
+  ov.querySelector("#nameOk").onclick=save;
+  input.onkeydown=(e)=>{if(e.key==="Enter")save();if(e.key==="Escape")close();};
+  ov.onclick=(e)=>{if(e.target===ov)close();};
+}
+const _meName=document.getElementById("meName");
+if(_meName)_meName.onclick=editName;
+
+// ===== ME 页统计（全部来自真实记录）=====
+function calcStreak(){
+  const all=store.get("perDay",{});
+  const install=getInstallDate();
+  let n=0;
+  const cur=new Date(TODAY);
+  for(let i=0;i<365;i++){
+    const k=dateKey(cur);
+    if(k<install)break;
+    const snap=all[k]||(k===TODAY_KEY?getSnapshot(k):null);
+    if(countDone(snap)>0)n++;
+    else if(i>0)break;   // 今天还没开始，不算断
+    cur.setDate(cur.getDate()-1);
+  }
+  return n;
+}
+function updateStats(){
+  const all=store.get("perDay",{});
+  const install=getInstallDate();
+  const prefix=`${TODAY.getFullYear()}-${String(TODAY.getMonth()+1).padStart(2,"0")}`;
+  let days=0,sum=0,cnt=0;
+  Object.keys(all).forEach(k=>{
+    if(k<install)return;
+    const d=countDone(all[k]);
+    if(d>0){days++;if(k.indexOf(prefix)===0){sum+=d/getDayTotal()*100;cnt++;}}
+  });
+  const streak=calcStreak();
+  const rate=cnt?Math.round(sum/cnt):0;
+  const s1=document.getElementById("statStreak");if(s1)s1.textContent=streak;
+  const s2=document.getElementById("statMonth");if(s2)s2.textContent=rate+"%";
+  const s3=document.getElementById("statDays");if(s3)s3.textContent=days;
+  const st=document.getElementById("streakText");if(st)st.textContent=`🔥 连续打卡 ${streak} 天`;
+}
+
+// ===== 首页问候语 / 日期 =====
+function renderGreeting(){
+  const h=NOW.getHours();
+  const g=h<5?"夜深了 🌙":h<9?"早上好 ☀":h<12?"上午好 ☀":h<14?"中午好 🌤":h<18?"下午好 ☕":h<23?"晚上好 🌆":"夜深了 🌙";
+  const gh=document.getElementById("greetH");if(gh)gh.textContent=g;
+  const gd=document.getElementById("greetDate");
+  if(gd)gd.textContent=`${TODAY.getMonth()+1}月${TODAY.getDate()}日 · 周${weekDays[(TODAY.getDay()+6)%7]}`;
+}
+
 // ===== Init =====
 const meTaglines=[
   "把今天过成一首有节奏的小调，先从不忘喝水开始 🎵💧",
@@ -1469,19 +1867,27 @@ const meTaglines=[
 ];
 const _taglineEl=document.getElementById("meTagline");
 if(_taglineEl) _taglineEl.textContent=meTaglines[Math.floor(Math.random()*meTaglines.length)];
-renderWater();renderPresets();renderDrinks();renderWeek();renderDaily();renderPeriodic();renderCal();renderDayDetail();renderRules();updateProgress();initBg();initAvatar();
+renderGreeting();applyName();renderWater();renderPresets();renderDrinks();renderWeek();renderDaily();renderPeriodic();renderCal();renderDayDetail();renderRules();updateProgress();updateStats();initBg();initAvatar();
+// 首次打开也检查一次，看看要不要问"起床了吗"
+setTimeout(maybeAskWake,1500);
 
 // ===== Service Worker 注册（PWA 离线可用）=====
 if("serviceWorker" in navigator){
   window.addEventListener("load",()=>{
     navigator.serviceWorker.register("./sw.js").catch(()=>{});
   });
+  // 新版 SW 接管后自动刷新一次，避免更新了文件还看旧缓存页面
+  let _swReloaded=false;
+  navigator.serviceWorker.addEventListener("controllerchange",()=>{
+    if(_swReloaded)return;_swReloaded=true;location.reload();
+  });
 }
 // ===== iOS 全屏安全区适配 =====
 (function safeAreaFix(){
+  const mm=(q)=>{try{return !!(window.matchMedia&&window.matchMedia(q).matches)}catch(e){return false}};
   const isStandalone = window.navigator.standalone === true ||
-    window.matchMedia("(display-mode: standalone)").matches ||
-    window.matchMedia("(display-mode: fullscreen)").matches;
+    mm("(display-mode: standalone)") ||
+    mm("(display-mode: fullscreen)");
   if(isStandalone) document.documentElement.classList.add("pwa-standalone");
 })();
 </script>
