@@ -160,7 +160,7 @@ body{display:flex;justify-content:center;align-items:flex-start;padding:24px 16p
 .drink-totals strong{color:var(--ink);font-size:14px;font-family:"Inter Tight",sans-serif}
 .drink-totals .warn{color:#D8554A;font-weight:600}
 .ai-hint{margin-top:8px;padding:8px 10px;background:var(--purple-soft);border-radius:10px;font-size:11px;color:#7C5FC4;line-height:1.5;display:flex;gap:6px;align-items:flex-start}
-.ai-hint::before{content:"🤖";font-size:14px;line-height:1}
+.ai-hint::before{content:"🥤";font-size:14px;line-height:1}
 .periodic{background:var(--card);border-radius:var(--r-card);box-shadow:var(--shadow);padding:8px 8px;margin-bottom:18px}
 .periodic .item{padding:8px 10px}
 .periodic .item .ico{width:34px;height:34px;border-radius:10px;background:var(--blue-soft);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;align-items:center;justify-content:center}
@@ -198,6 +198,11 @@ body{display:flex;justify-content:center;align-items:flex-start;padding:24px 16p
 .cal-cell.today .day-ring{opacity:0}
 .cal-cell .dots{display:flex;gap:2px;margin-top:3px;height:4px;align-items:center;flex-shrink:0}
 .cal-cell .dots i{width:4px;height:4px;border-radius:50%;display:block}
+.ring-legend{display:flex;justify-content:center;gap:18px;padding:8px 0 4px;font-size:11px;color:var(--ink3)}
+.ring-legend span{display:flex;align-items:center;gap:5px}
+.ring-legend .lg{width:9px;height:9px;border-radius:50%;display:inline-block;flex-shrink:0}
+.ring-legend .lg-y{background:#FFC857}
+.ring-legend .lg-b{background:#6BB6E0}
 .dot-y{background:var(--yellow)}
 .dot-c{background:var(--coral)}
 .dot-b{background:var(--blue)}
@@ -453,25 +458,23 @@ html.pwa-standalone .status-bar{display:none}
           </div>
         </div>
       </div>
-      <div class="sec-title"><h3>饮料记录</h3><span class="more">拍照 · AI 识别热量</span></div>
+      <div class="sec-title"><h3>饮料记录</h3><span class="more">点什么记什么</span></div>
       <div class="drink-card" id="drinkCard">
         <div class="drink-head">
-          <div class="ttl">🥤 今日饮料 <span class="badge" id="aiBadge">AI 待接入</span></div>
-          <div class="cnt" id="drinkCnt">本月 0 / 1</div>
+          <div class="ttl">🥤 今日饮料</div>
+          <div class="cnt" id="drinkCnt">本月 0 杯</div>
         </div>
         <div class="drinks-list" id="drinksList">
           <div class="drink-add" id="drinkAdd">
             <span>＋</span>
-            <span class="hint">拍照 · 上传</span>
+            <span class="hint">自定义</span>
           </div>
         </div>
         <div class="preset-row" id="presetRow"></div>
         <div class="drink-totals">
-          <span>今日热量 <strong id="totalKcal">0</strong> kcal</span>
-          <span>糖分 <strong id="totalSugar">0</strong> g <span id="sugarWarn" style="display:none" class="warn">· 已超额</span></span>
+          <span>今日 <strong id="totalKcal">0</strong> 杯</span>
         </div>
-        <input type="file" id="drinkFile" accept="image/*" capture="environment" style="display:none">
-        <div class="ai-hint">拍照上传后，WorkBuddy AI 会帮你识别饮料种类和估算热量。流程：保存图片 → 把图片发给 AI（对话窗口）→ AI 告诉你这杯是什么 · 大约多少 kcal → 选预设完成记录。</div>
+        <div class="ai-hint">只记喝过什么，不算热量 · 含咖啡因的会单独计数，帮你盯住「每月 1 杯」的小目标。</div>
       </div>
       <div class="sec-title"><h3>每日打卡</h3><span class="more">7 项</span></div>
       <div class="list" id="dailyList"></div>
@@ -492,6 +495,7 @@ html.pwa-standalone .status-bar{display:none}
           <div>一</div><div>二</div><div>三</div><div>四</div><div>五</div><div>六</div><div>日</div>
         </div>
         <div class="cal-grid" id="calGrid"></div>
+        <div class="ring-legend"><span><i class="lg lg-y"></i>每日打卡</span><span><i class="lg lg-b"></i>周期事项</span></div>
       </div>
       <div class="sec-title"><h3 id="calSelH">9月19日 · 周六</h3><span class="more" id="calSelSub">今天</span></div>
       <div class="day-detail" id="dayDetail"></div>
@@ -648,18 +652,18 @@ const store={
   set(k,v){try{localStorage.setItem("sop_"+k,JSON.stringify(v))}catch(e){}},
 };
 
-// ===== Drink presets =====
+// ===== Drink presets（只记种类与咖啡因，不算热量）=====
 const drinkPresets=[
-  {id:"coffee_ame", name:"美式咖啡", icon:"☕", kcal:5, sugar:0, caffeine:true},
-  {id:"latte", name:"拿铁", icon:"🥛", kcal:120, sugar:10, caffeine:true},
-  {id:"bubble", name:"珍珠奶茶", icon:"🧋", kcal:350, sugar:45, caffeine:true},
-  {id:"matcha", name:"抹茶拿铁", icon:"🍵", kcal:200, sugar:20, caffeine:true},
-  {id:"oj", name:"鲜榨橙汁", icon:"🍊", kcal:110, sugar:22, caffeine:false},
-  {id:"lemon_tea", name:"柠檬茶", icon:"🍋", kcal:200, sugar:24, caffeine:false},
-  {id:"water", name:"矿泉水", icon:"💧", kcal:0, sugar:0, caffeine:false},
-  {id:"cola", name:"可乐", icon:"🥤", kcal:140, sugar:35, caffeine:false},
-  {id:"beer", name:"啤酒", icon:"🍺", kcal:150, sugar:13, caffeine:false},
-  {id:"yogurt", name:"酸奶饮料", icon:"🥛", kcal:100, sugar:15, caffeine:false},
+  {id:"coffee_ame", name:"美式咖啡", icon:"☕", caffeine:true},
+  {id:"latte", name:"拿铁", icon:"🥛", caffeine:true},
+  {id:"bubble", name:"珍珠奶茶", icon:"🧋", caffeine:true},
+  {id:"matcha", name:"抹茶拿铁", icon:"🍵", caffeine:true},
+  {id:"oj", name:"鲜榨橙汁", icon:"🍊", caffeine:false},
+  {id:"lemon_tea", name:"柠檬茶", icon:"🍋", caffeine:false},
+  {id:"water", name:"矿泉水", icon:"💧", caffeine:false},
+  {id:"cola", name:"可乐", icon:"🥤", caffeine:false},
+  {id:"beer", name:"啤酒", icon:"🍺", caffeine:false},
+  {id:"yogurt", name:"酸奶饮料", icon:"🥛", caffeine:false},
 ];
 
 // ===== State =====
@@ -676,7 +680,7 @@ const drinkPresets=[
 })();
 
 let water=store.get("water",0);
-let drinks=store.get("drinks",{}); // {dateKey: [{id, name, icon, kcal, sugar, caffeine, photo, time}]}
+let drinks=store.get("drinks",{}); // {dateKey: [{id, name, icon, caffeine, time}]} —— 不再存热量/照片
 let dailyDone=store.get("daily",{});
 let periodicDone=store.get("periodic",{});
 const dailyItems=[
@@ -814,8 +818,9 @@ let calMonth=TODAY.getMonth();
 let selKey=TODAY_KEY;
 
 // ===== Per-day completion helper =====
+// 每日进度 = 每日打卡 + 饮水达标（周期事项不算在内，单独形成日历上的蓝色外环）
 function getDayTotal(){
-  return dailyItems.length + 1 + periodicItems.length;
+  return dailyItems.length + 1;
 }
 // 今天取实时状态；过去的某天取当天留下的快照（没有就是 null）
 function getSnapshot(k){
@@ -829,25 +834,43 @@ function getSnapshot(k){
 function countDone(snap){
   if(!snap)return 0;
   const d=Object.values(snap.dailyDone||{}).filter(Boolean).length;
-  const p=Object.values(snap.periodicDone||{}).filter(Boolean).length;
   const w=(snap.water||0)>=1500?1:0;
-  return d+p+w;
+  return d+w;
 }
 function getDayDone(k){
   const snap=getSnapshot(k);
   return {total:getDayTotal(), done:countDone(snap), snap};
+}
+// 某天适用的周期事项（按星期几匹配；无 weekday 的视为随时可做）
+function getDayWdIdx(k){const p=k.split("-").map(Number);return (new Date(p[0],p[1]-1,p[2]).getDay()+6)%7;}
+function applicablePeriodics(k){
+  const wd=getDayWdIdx(k);
+  return periodicItems.filter(p=>p.weekday===undefined||p.weekday===wd);
 }
 // 某天是否有真实记录 —— 决定日历上画不画东西
 function hasRecord(k){
   if(k>TODAY_KEY) return false;
   if(k<getInstallDate()) return false;
   if((drinks[k]||[]).length) return true;
-  return countDone(getSnapshot(k))>0;
+  const snap=getSnapshot(k);
+  if(!snap) return false;
+  if(countDone(snap)>0) return true;
+  return Object.values(snap.periodicDone||{}).some(Boolean);
 }
-// 某天完成度（0-100）；没记录返回 null（日历就不画圆环）
+// 黄色内环：每日打卡完成度（0-100）；没记录返回 null（日历就不画）
 function getDayPct(k){
   if(!hasRecord(k)) return null;
   return Math.round(countDone(getSnapshot(k))/getDayTotal()*100);
+}
+// 蓝色外环：当天周期事项完成度；当天没有适用的周期事项就返回 null
+function getPeriodicPct(k){
+  if(!hasRecord(k)) return null;
+  const app=applicablePeriodics(k);
+  if(!app.length) return null;
+  const snap=getSnapshot(k);
+  if(!snap) return null;
+  const done=app.filter(p=>(snap.periodicDone||{})[p.id]).length;
+  return Math.round(done/app.length*100);
 }
 
 function saveTodayState(){
@@ -900,7 +923,7 @@ document.getElementById("waterMinus").onclick=(e)=>{
   updateProgress(false);saveTodayState();renderCal();
 };
 
-// ===== Drinks =====
+// ===== Drinks（只记种类，不算热量）=====
 function renderDrinks(){
   const list=document.getElementById("drinksList");
   list.querySelectorAll(".drink-thumb,.drink-photo").forEach(n=>n.remove());
@@ -909,18 +932,12 @@ function renderDrinks(){
   today.forEach((d,i)=>{
     const t=document.createElement("div");
     t.className="drink-thumb";
-    if(d.photo)t.innerHTML=`<img src="${d.photo}" alt=""><div class="kcal">${d.kcal}kcal</div><div class="x" data-i="${i}">×</div>`;
-    else t.innerHTML=`<span style="font-size:30px">${d.icon}</span><div class="kcal">${d.kcal}kcal · ${d.sugar}g</div><div class="x" data-i="${i}">×</div>`;
+    t.innerHTML=`<span style="font-size:30px">${d.icon||"\u{1F964}"}</span><div class="kcal">${esc(d.name||"饮料")}${d.caffeine?" \u2615":""}</div><div class="x" data-i="${i}">\u00d7</div>`;
     t.querySelector(".x").onclick=(e)=>{e.stopPropagation();today.splice(i,1);drinks[TODAY_KEY]=today;store.set("drinks",drinks);renderDrinks();renderCal();};
     list.insertBefore(t,add);
   });
-  // Totals
-  let k=0,s=0;
-  today.forEach(d=>{k+=d.kcal||0;s+=d.sugar||0;});
-  document.getElementById("totalKcal").textContent=k;
-  document.getElementById("totalSugar").textContent=s;
-  document.getElementById("sugarWarn").style.display=s>25?"inline":"none";
-  // Monthly caffeine cap
+  document.getElementById("totalKcal").textContent=today.length;
+  // 本月统计：总杯数 + 咖啡因杯数（盯「每月 1 杯」小目标）
   const month=thisMonth(TODAY);
   let caffe=0,monthCount=0;
   Object.entries(drinks).forEach(([k2,arr])=>{
@@ -931,79 +948,42 @@ function renderDrinks(){
   });
   const cnt=document.getElementById("drinkCnt");
   cnt.classList.toggle("over",caffe>1);
-  cnt.textContent=`含咖啡因 ${caffe}/1 · 饮料 ${monthCount} 杯`;
+  cnt.textContent=`本月 ${monthCount} 杯${caffe?` · 咖啡因 ${caffe}/1`:""}`;
 }
-document.getElementById("drinkAdd").onclick=()=>document.getElementById("drinkFile").click();
-document.getElementById("drinkFile").onchange=async(e)=>{
-  const f=e.target.files[0];if(!f)return;
-  toast("🤖 AI 识别中...");
-  const dataUrl=await fileToCompressedDataUrl(f,480);
-  // Simulated AI: show preset picker overlay
-  showPresetPicker(dataUrl);
-  e.target.value="";
-};
-function showPresetPicker(photo){
-  // === WorkBuddy AI 识别引导式弹窗 ===
-  const overlay=document.createElement("div");
-  overlay.style.cssText="position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9999;display:flex;align-items:flex-end;justify-content:center;backdrop-filter:blur(2px);animation:fade .25s ease";
-  const sheet=document.createElement("div");
-  sheet.style.cssText="background:#FFFAF0;width:390px;max-width:100vw;border-radius:24px 24px 0 0;padding:20px;max-height:85vh;overflow:auto";
-  sheet.innerHTML=`
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
-      <div style="font-weight:700;font-size:15px">🤖 WorkBuddy AI 识别</div>
-      <button id="cl" style="background:var(--card);border:1px solid var(--line);font-size:16px;cursor:pointer;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--ink2);line-height:1">×</button>
+// 「＋ 自定义」：直接写名字记一杯，不拍照不算热量
+document.getElementById("drinkAdd").onclick=()=>{
+  if(document.querySelector(".name-edit-overlay"))return;
+  const ov=document.createElement("div");
+  ov.className="name-edit-overlay";
+  ov.innerHTML=`<div class="name-edit-box">
+    <h5>记一杯什么？</h5>
+    <p>写个名字就行，不算热量。含咖啡因的话勾一下，帮你盯住「每月 1 杯」的小目标。</p>
+    <input class="name-edit-input" id="dkName" maxlength="10" placeholder="比如：自制柠檬水">
+    <label style="display:flex;align-items:center;gap:8px;margin-top:12px;font-size:13px;color:var(--ink2);cursor:pointer">
+      <input type="checkbox" id="dkCaff" style="width:16px;height:16px;accent-color:var(--accent)"> 含咖啡因 \u2615
+    </label>
+    <div class="name-edit-row">
+      <button class="name-edit-cancel" id="dkCancel">取消</button>
+      <button class="name-edit-ok" id="dkOk">记上</button>
     </div>
-    <div style="width:100%;height:170px;border-radius:14px;overflow:hidden;margin-bottom:12px;background:#FFFAF0;border:1px solid var(--line);display:flex;align-items:center;justify-content:center">
-      <img src="${photo}" alt="饮料照片" style="max-width:100%;max-height:100%;object-fit:contain">
-    </div>
-    <div id="ai-step" style="padding:12px 14px;background:var(--purple-soft);border-radius:12px;margin-bottom:12px;color:#7C5FC4;font-size:13px;font-weight:500;display:flex;align-items:center;gap:10px">
-      <div style="width:18px;height:18px;border:2px solid rgba(124,95,196,.25);border-top-color:#7C5FC4;border-radius:50%;animation:spin .8s linear infinite;flex-shrink:0"></div>
-      <span>WorkBuddy AI 通道已就绪 · 待你发送图片</span>
-    </div>
-    <button id="ai-dl" style="width:100%;padding:12px;background:linear-gradient(135deg,#7C5FC4,#B79CED);color:#fff;border:none;border-radius:12px;font-weight:600;font-size:13px;cursor:pointer;font-family:inherit;margin-bottom:10px;display:flex;align-items:center;justify-content:center;gap:6px">
-      <span style="font-size:14px">📥</span> 保存图片到设备（去对话中识别）
-    </button>
-    <div style="font-size:11px;color:var(--ink2);line-height:1.7;background:#FFFAEC;padding:10px 12px;border-radius:10px;margin-bottom:14px;border:1px dashed var(--line2)">
-      <strong style="color:var(--ink);font-weight:600">使用步骤：</strong><br>
-      ① 点击上方按钮把图片保存到设备<br>
-      ② 切到 WorkBuddy 对话窗口（就是我）<br>
-      ③ 把图片发给我，我会识别这杯是什么<br>
-      ④ 告诉你估算的热量 / 糖分<br>
-      ⑤ 回到这里选对应预设完成记录
-    </div>
-    <div style="text-align:center;font-size:11px;color:var(--ink3);margin:10px 0;letter-spacing:.04em;text-transform:uppercase">
-      — 或者直接选预设 —
-    </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">${drinkPresets.map(p=>`
-      <button data-id="${p.id}" style="display:flex;align-items:center;gap:8px;padding:10px;background:#fff;border:1.5px solid var(--line);border-radius:14px;cursor:pointer;font-family:inherit;text-align:left">
-        <span style="font-size:22px">${p.icon}</span>
-        <span><div style="font-weight:600;font-size:13px">${p.name}</div><div style="font-size:10px;color:var(--ink3);font-family:Inter Tight">${p.kcal}kcal · ${p.sugar}g 糖</div></span>
-      </button>`).join("")}</div>`;
-  overlay.appendChild(sheet);
-  document.body.appendChild(overlay);
-  const cl=()=>overlay.remove();
-  sheet.querySelector("#cl").onclick=cl;
-  overlay.onclick=(e)=>{if(e.target===overlay)cl();};
-
-  // 图片下载 → 用户去对话中发给 AI 识别
-  sheet.querySelector("#ai-dl").onclick=()=>{
-    const link=document.createElement("a");
-    link.href=photo;
-    link.download=`drink_${Date.now()}.jpg`;
-    document.body.appendChild(link);link.click();document.body.removeChild(link);
-    const panel=sheet.querySelector("#ai-step");
-    panel.style.background="var(--green-soft)";
-    panel.innerHTML=`<span style="font-size:18px;color:var(--green-deep)">✓</span><span><strong style="color:var(--green-deep)">图片已保存到设备</strong> · 请到对话窗口发给 AI 识别</span>`;
-    toast("✅ 图片已下载 · 去对话中发给 AI");
+  </div>`;
+  document.body.appendChild(ov);
+  const input=ov.querySelector("#dkName");
+  setTimeout(()=>{input.focus();},60);
+  const close=()=>ov.remove();
+  const save=()=>{
+    const name=(input.value||"").trim();
+    if(!name){toast("先写个名字 \u270d\uFE0F");input.focus();return;}
+    addDrink({id:"custom",name,icon:"\u{1F964}",caffeine:ov.querySelector("#dkCaff").checked,time:new Date().toLocaleTimeString("zh",{hour:"2-digit",minute:"2-digit"})});
+    close();
+    burst(window.innerWidth/2,window.innerHeight*0.55,18,['#6BB6E0','#FFC857','#B79CED']);
+    toast(`\u{1F964} 已记录「${name}」`);
   };
-
-  sheet.querySelectorAll("button[data-id]").forEach(b=>b.onclick=()=>{
-    const p=drinkPresets.find(x=>x.id===b.dataset.id);
-    addDrink({...p, photo, time:new Date().toLocaleTimeString("zh",{hour:"2-digit",minute:"2-digit"})});
-    overlay.remove();
-    burst(window.innerWidth/2,window.innerHeight/2,40,['#B79CED','#FFC857','#7BB661','#FF8C7A']);
-  });
-}
+  ov.querySelector("#dkCancel").onclick=close;
+  ov.querySelector("#dkOk").onclick=save;
+  input.onkeydown=(e)=>{if(e.key==="Enter")save();if(e.key==="Escape")close();};
+  ov.onclick=(e)=>{if(e.target===ov)close();};
+};
 function addDrink(d){
   const arr=drinks[TODAY_KEY]||[];arr.push(d);drinks[TODAY_KEY]=arr;
   store.set("drinks",drinks);renderDrinks();renderCal();
@@ -1013,23 +993,9 @@ function renderPresets(){
   drinkPresets.forEach(p=>{
     const b=document.createElement("button");
     b.className="preset";
-    b.innerHTML=`${p.icon} ${p.name} <span class="k">${p.kcal}kcal</span>`;
+    b.innerHTML=`${p.icon} ${p.name}${p.caffeine?' <span class="k">\u2615</span>':""}`;
     b.onclick=()=>addDrink({...p,time:new Date().toLocaleTimeString("zh",{hour:"2-digit",minute:"2-digit"})});
     row.appendChild(b);
-  });
-}
-async function fileToCompressedDataUrl(file,max=480){
-  return new Promise((resolve)=>{
-    const img=new Image();
-    img.onload=()=>{
-      const scale=Math.min(1,max/Math.max(img.width,img.height));
-      const c=document.createElement("canvas");
-      c.width=Math.round(img.width*scale);c.height=Math.round(img.height*scale);
-      c.getContext("2d").drawImage(img,0,0,c.width,c.height);
-      URL.revokeObjectURL(img.src);
-      resolve(c.toDataURL("image/jpeg",0.7));
-    };
-    img.src=URL.createObjectURL(file);
   });
 }
 
@@ -1066,14 +1032,17 @@ function renderDaily(){
     d.onclick=(e)=>{
       // 早起这一项特殊：勾上时顺手记下此刻的时间，取消勾选则清掉
       if(it.id==="wake"){
-        if(!it.done){ markWake(new Date()); }
-        else { delete wakeTimes[TODAY_KEY]; store.set(WAKE_KEY,wakeTimes); }
-        it.done=!it.done;dailyDone.wake=it.done;store.set("daily",dailyDone);
-        renderDaily();updateProgress(it.done);saveTodayState();renderCal();renderDayDetail();
-        if(it.done){
+        if(!it.done){
+          // 勾上：以点击这一刻为起床时间（markWake 内部已置 done 并刷新全部界面）
+          markWake(new Date(),true);
           const r=e.currentTarget.getBoundingClientRect();
           burst(r.left+22,r.top+r.height/2,12,['#FFC857','#FF8C7A','#6BB6E0','#7BB661','#B79CED']);
           plusOne(r.left+r.width/2,r.top-4);
+        }else{
+          // 取消：清掉时间，回到未完成
+          delete wakeTimes[TODAY_KEY];store.set(WAKE_KEY,wakeTimes);
+          it.done=false;dailyDone.wake=false;store.set("daily",dailyDone);
+          renderDaily();updateProgress(false);saveTodayState();renderCal();renderDayDetail();updateStats();
         }
         checkFullDay();
         return;
@@ -1100,10 +1069,10 @@ function checkFullDay(){
   if(isAllDone()){rain(50);toast("🎉 今日所有打卡完成 · 棒！");}
 }
 
-// ===== Progress =====
+// ===== Progress（只算每日打卡 + 饮水；周期事项走日历的蓝色外环，不算这里）=====
 function updateProgress(markDone){
-  const total=dailyItems.length+1+periodicItems.length;
-  const done=dailyItems.filter(x=>x.done).length+(water>=1500?1:0)+periodicItems.filter(x=>x.done).length;
+  const total=dailyItems.length+1;
+  const done=dailyItems.filter(x=>x.done).length+(water>=1500?1:0);
   const pct=Math.round(done/total*100);
   document.getElementById("ringPct").textContent=pct+"%";
   document.getElementById("progH").textContent=`今日 ${total} 项，已完成 ${done}`;
@@ -1180,13 +1149,21 @@ function renderCal(){
     if(beforeStart){c.classList.add("dim");c.title="开始使用之前 · 没有记录";}
     else if(isFuture){c.classList.add("future");}
 
-    // 只有真正留下过记录的日子才画圆环
+    // 只有真正留下过记录的日子才画圆环：黄色内环 = 每日进度，蓝色外环 = 周期完成
     let ringHtml="";
     const pct=getDayPct(dk);
-    if(pct!==null){
-      const C=2*Math.PI*15;
-      const off=C*(1-pct/100);
-      ringHtml=`<svg class="day-ring" viewBox="0 0 34 34"><circle cx="17" cy="17" r="15" fill="none" stroke="#FFF3D9" stroke-width="2.5"/><circle cx="17" cy="17" r="15" fill="none" stroke="#FFC857" stroke-width="2.5" stroke-dasharray="${C.toFixed(2)}" stroke-dashoffset="${off.toFixed(2)}" stroke-linecap="round" transform="rotate(-90 17 17)"/></svg>`;
+    const ppct=getPeriodicPct(dk);
+    if(pct!==null||ppct!==null){
+      const sw=2.4,rI=11.2,rO=15;
+      const CI=2*Math.PI*rI,CO=2*Math.PI*rO;
+      let inner="",outer="";
+      if(pct!==null){
+        inner=`<circle cx="17" cy="17" r="${rI}" fill="none" stroke="#FFF3D9" stroke-width="${sw}"/><circle cx="17" cy="17" r="${rI}" fill="none" stroke="#FFC857" stroke-width="${sw}" stroke-dasharray="${CI.toFixed(2)}" stroke-dashoffset="${(CI*(1-pct/100)).toFixed(2)}" stroke-linecap="round" transform="rotate(-90 17 17)"/>`;
+      }
+      if(ppct!==null){
+        outer=`<circle cx="17" cy="17" r="${rO}" fill="none" stroke="#D8EDF9" stroke-width="${sw}"/><circle cx="17" cy="17" r="${rO}" fill="none" stroke="#6BB6E0" stroke-width="${sw}" stroke-dasharray="${CO.toFixed(2)}" stroke-dashoffset="${(CO*(1-ppct/100)).toFixed(2)}" stroke-linecap="round" transform="rotate(-90 17 17)"/>`;
+      }
+      ringHtml=`<svg class="day-ring" viewBox="0 0 34 34">${inner}${outer}</svg>`;
     }
     const evs=[];
     if((drinks[dk]||[]).length)evs.push("g");
@@ -1239,14 +1216,20 @@ function renderDayDetail(){
   const ddone=(snap&&snap.dailyDone)||{};
   const pdone=(snap&&snap.periodicDone)||{};
   const wakeT=(snap&&snap.wakeTime)||wakeTimes[selKey]||"";
+  const perList=periodicItems.filter(p=>pdone[p.id]);
+  const appPer=applicablePeriodics(selKey);
+  const perDoneCnt=appPer.filter(p=>pdone[p.id]).length;
 
-  if(done===0 && !dayDrinks.length){
+  if(done===0 && !dayDrinks.length && perList.length===0){
     el.innerHTML=head+`<div class="sub">这天没有留下任何记录</div>
       <div class="empty-note">🌱 空白也是一种答案，明天见。</div>`;
     return;
   }
 
-  let html=head+`<div class="sub">完成 ${done} / ${total} 项 · 完成度 ${pct}%</div><div class="pct-bar"><i style="width:${pct}%"></i></div>`;
+  let html=head+`<div class="sub">每日打卡 ${done} / ${total} 项 · 完成度 ${pct}%</div><div class="pct-bar"><i style="width:${pct}%"></i></div>`;
+  if(appPer.length){
+    html+=`<div class="sub" style="margin-top:8px;margin-bottom:0">🔵 周期事项（额外）${perDoneCnt} / ${appPer.length} 项完成</div>`;
+  }
 
   html+=`<div class="dh">每日打卡</div>`;
   dailyItems.forEach(it=>{
@@ -1258,7 +1241,6 @@ function renderDayDetail(){
 
   html+=`<div class="dh">饮水</div><div class="mini${dayWater>=1500?"":" undone"}"><div class="chk"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 12 10 17 19 8"/></svg></div><div>${dayWater}ml${dayWater>=1500?" · 达标 ✓":""}</div></div>`;
 
-  const perList=periodicItems.filter(p=>pdone[p.id]);
   if(perList.length){
     html+=`<div class="dh">当天完成的周期事项</div>`;
     perList.forEach(p=>{html+=`<div class="mini"><div class="chk"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 12 10 17 19 8"/></svg></div><div>${p.ico} ${esc(p.name)}</div></div>`;});
@@ -1266,7 +1248,7 @@ function renderDayDetail(){
 
   if(dayDrinks.length){
     html+=`<div class="dh">饮料记录</div><div class="logged">`;
-    dayDrinks.forEach(d=>html+=`<span class="milk">${d.icon} ${d.name} · ${d.kcal}kcal · ${d.sugar}g</span>`);
+    dayDrinks.forEach(d=>html+=`<span class="milk">${d.icon||"🥤"} ${esc(d.name||"饮料")}${d.caffeine?" · ☕":""}</span>`);
     html+=`</div>`;
   }
   el.innerHTML=html;
@@ -1814,6 +1796,12 @@ const _meName=document.getElementById("meName");
 if(_meName)_meName.onclick=editName;
 
 // ===== ME 页统计（全部来自真实记录）=====
+// 一天快照里是否有任何记录（每日打卡 / 饮水 / 周期事项任一）
+function snapHasRecord(snap){
+  if(!snap)return false;
+  if(countDone(snap)>0)return true;
+  return Object.values(snap.periodicDone||{}).some(Boolean);
+}
 function calcStreak(){
   const all=store.get("perDay",{});
   const install=getInstallDate();
@@ -1823,7 +1811,7 @@ function calcStreak(){
     const k=dateKey(cur);
     if(k<install)break;
     const snap=all[k]||(k===TODAY_KEY?getSnapshot(k):null);
-    if(countDone(snap)>0)n++;
+    if(snapHasRecord(snap))n++;
     else if(i>0)break;   // 今天还没开始，不算断
     cur.setDate(cur.getDate()-1);
   }
@@ -1836,8 +1824,11 @@ function updateStats(){
   let days=0,sum=0,cnt=0;
   Object.keys(all).forEach(k=>{
     if(k<install)return;
-    const d=countDone(all[k]);
-    if(d>0){days++;if(k.indexOf(prefix)===0){sum+=d/getDayTotal()*100;cnt++;}}
+    const d=countDone(all[k]);   // 完成率只算每日打卡
+    if(snapHasRecord(all[k])){
+      days++;
+      if(k.indexOf(prefix)===0){sum+=d/getDayTotal()*100;cnt++;}
+    }
   });
   const streak=calcStreak();
   const rate=cnt?Math.round(sum/cnt):0;
